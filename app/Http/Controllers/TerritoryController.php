@@ -140,7 +140,7 @@ class TerritoryController extends Controller
         }
         $input_data = $input["info"];
         $data['name'] = $input_data['name'];
-
+        $data['short_code'] = $input_data['short_code'];
 
         if(isset($input_data['id']) && $input_data['id'] != '' ){
                 $checkData = DB::table('m_territory')
