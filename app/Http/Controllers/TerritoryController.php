@@ -33,11 +33,11 @@ class TerritoryController extends Controller
         $token = $this->getToken($request);
         $user = JWTAuth::toUser($token);
         $input = $request->all();
-        
+
         $lists = DB::table('m_territory')
-        ->where('name','like','%'.$input['q'].'%')
-        ->orderBy('id','desc')
-        ->paginate(5);        
+                ->where('name','like','%'.$input['q'].'%')
+                ->orderBy($input['column'],$input['orderby'])
+                ->paginate(5);        
        
         $result = array();
         if(count($lists) > 0){
@@ -183,11 +183,11 @@ class TerritoryController extends Controller
         $input = $request->all();
                  
         $o_id = DB::table('m_territory')
-                ->where('id','=',$input['info']['id'])
+                ->where('id','=',$id)
                 ->delete();  
         
         if($o_id){
-            $result['info'] = 'Your Territory record has been removed successfully';
+            $result['info']['msg'] = 'Your Territory record has been removed successfully';
             return response()->json(['result'=>$result]);
         }
         return response()->json(['result'=>'Your Territory has been coud not removed!'],401);
