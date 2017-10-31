@@ -34,10 +34,19 @@ class TerritoryController extends Controller
         $user = JWTAuth::toUser($token);
         $input = $request->all();
 
+        $searchValue = $input['q'];
         $lists = DB::table('m_territory')
-                ->where('name','like','%'.$input['q'].'%')
+                ->where(function($query) use ($searchValue)
+                {
+                    if(!empty($searchValue)):
+                        $query->where('name','LIKE',DB::raw("'%$searchValue%'"));
+                        $query->orWhere('short_code','LIKE',DB::raw("'%$searchValue%'"));
+                    endif;
+                })
+                //->where('name','like','%'.$input['q'].'%')
                 ->orderBy($input['column'],$input['orderby'])
                 ->paginate(5);        
+                //->toSql();        
        
         $result = array();
         if(count($lists) > 0){
@@ -187,10 +196,10 @@ class TerritoryController extends Controller
                 ->delete();  
         
         if($o_id){
-            $result['info']['msg'] = 'Your Territory record has been removed successfully';
+            $result['info']['msg'] = 'Your record has been removed successfully';
             return response()->json(['result'=>$result]);
         }
-        return response()->json(['result'=>'Your Territory has been coud not removed!'],401);
+        return response()->json(['result'=>'Your record coud not removed!'],401);
         
     }
 }

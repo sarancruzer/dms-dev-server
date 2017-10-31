@@ -31,6 +31,24 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('updateTerritory/{id}', 'TerritoryController@update');		
 	Route::post('deleteTerritory/{id}', 'TerritoryController@destroy');	
 
+	//Master modules
+	Route::post('getState', 'StateController@index');
+	Route::post('addState', 'StateController@create');
+	Route::post('updateState/{id}', 'StateController@update');		
+	Route::post('deleteState/{id}', 'StateController@destroy');	
+
+	//Master modules
+	Route::post('getClientType', 'ClientTypeController@index');
+	Route::post('addClientType', 'ClientTypeController@create');
+	Route::post('updateClientType/{id}', 'ClientTypeController@update');		
+	Route::post('deleteClientType/{id}', 'ClientTypeController@destroy');	
+
+	//Master modules
+	Route::post('getTitle', 'TitleController@index');
+	Route::post('addTitle', 'TitleController@create');
+	Route::post('updateTitle/{id}', 'TitleController@update');		
+	Route::post('deleteTitle/{id}', 'TitleController@destroy');	
+
 	// Route::post('getTerritory', 'TerritoryController@index');
 	// Route::post('addTerritory', 'TerritoryController@create');
 	// Route::post('updateTerritory/{id}', 'TerritoryController@update');		
