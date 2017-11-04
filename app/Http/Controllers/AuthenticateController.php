@@ -38,7 +38,12 @@ class AuthenticateController extends Controller
         }
 
 
-    $user = User::where("email", $credentials["email"])->first();
+    $user =  DB::table('users as u')
+             ->leftjoin('m_roles as r','r.id','=','u.role_id')
+             ->select('u.*','r.name as user_type')
+             ->where("email", $credentials["email"])
+             ->first();
+             
     $details["id"] = $user->id;
     $details["first_name"] = $user->first_name;
     $details["last_name"] = $user->last_name;

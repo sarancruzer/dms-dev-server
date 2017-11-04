@@ -15,9 +15,33 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
+        $token = $this->getToken($request);
+        $user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        $searchValue = $input['q'];
+        $lists = DB::table('users')
+                ->where(function($query) use ($searchValue)
+                {
+                    if(!empty($searchValue)):
+                        $query->where('name','LIKE',DB::raw("'%$searchValue%'"));
+                        $query->orWhere('email','LIKE',DB::raw("'%$searchValue%'"));
+                    endif;
+                })
+                ->where('status','=',1)
+                ->orderBy($input['column'],$input['orderby'])
+                ->paginate(5);        
+                //->toSql();        
+       
+        $result = array();
+        if(count($lists) > 0){
+             $result["info"] = $lists;
+             return response()->json(["result" => $result]);   
+        }
+        return response()->json(['error'=>"No records found!"],401);
     }
 
     /**
@@ -27,24 +51,40 @@ class UserController extends Controller
      */
     public function create(Request $request)
     {
-        //
+        $token = $this->getToken($request);
+        $user = JWTAuth::toUser($token);
         $input = $request->all();
-    
-        $d = $input['info'];
-        $data['first_name'] = $d['first_name'];
-        $data['last_name'] = $d['last_name'];
-        $data['email'] = $d['email'];
-        $data['mobile'] = $d['mobile'];
-        $data['avatar'] = "";
-        $data['user_type'] = $d['user_type'];
-        $data['password'] = Hash::make($d['password']);
         
-        $regId = DB::table('users')->insertGetId($data);
-        if($regId){
-            $result['result'] = 'Your registration has been completed';
-            return response()->json(['result'=>$result]);
+        $count = count($input["info"]);
+        if(!$count){
+            return response()->json(['error'=>"Invalid Entry"],401);
         }
-        return response()->json(['result'=>'Your registration failed!!'],401);
+
+        $input_data = $input['info'];
+        $data['first_name'] = $input_data['first_name'];
+        $data['last_name'] = $input_data['last_name'];
+        $data['email'] = $input_data['email'];
+        $data['mobile'] = $input_data['mobile'];
+        $data['role_id'] = $input_data['role_id'];
+        
+        $checkData = DB::table('users')
+                    ->where('email','=',$input_data['email'])
+                    ->select('email')
+                    ->first();
+        if($checkData){
+                return response()->json(['error'=>"Email Already exists!"],401);
+        }
+        
+        $listId = DB::table('users')->insertGetId($data);
+        $res_msg = "Your record has been inserted sucessfully";
+        
+        $result = array();
+        if(count($listId) > 0){
+                $result['info']['msg'] = $res_msg;
+                return response()->json(["result" => $result]);   
+        }
+        return response()->json(['error'=>"Your record has been coud not added!"],401);
+        
     }
 
     /**
@@ -75,9 +115,25 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
+    public function edit(Request $request , $id)
+    {   
+        $token = $this->getToken($request);
+    	$user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+        
+        $lists = DB::table('listings')->where('id','=',$id)->first();
+        
+        if(count($lists)>0){
+            $result['info']['lists'] = $lists;
+            return response()->json(['result'=>$result]);
+        }
+        return response()->json(['error'=>'Your listing has been coud not added!'],401);
+                            
+        
     }
 
     /**
@@ -89,34 +145,65 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $token = $this->getToken($request);
+    	$user = JWTAuth::toUser($token);
         $input = $request->all();
-    
-        $d = $input['info'];
-        $data['first_name'] = $d['first_name'];
-        $data['last_name'] = $d['last_name'];
-        $data['email'] = $d['email'];
-        $data['mobile'] = $d['email'];
-        $data['notes'] = $d['notes'];
-        $data['twitter_link'] = $d['twitter_link'];
-        $data['facebook_link'] = $d['facebook_link'];
-        $data['googleplus_link'] = $d['googleplus_link'];
-       
-        $data['avatar'] = '';
-        if($request->hasFile('avatar')){
-                $destinationPath = 'uploads/avatar/'.$input["info"]["company"];
-                $file = $request->file('avatar');
-                $upfile = $file->move($destinationPath,$file->getClientOriginalName());
-                $data["avatar"] = $destinationPath."/".$file->getClientOriginalName();
-        }
 
-        $profileId = DB::table('users')->insertGetId($data);
-        if($profileId){
-            $result['result'] = 'Your profile has been updated successfully! ';
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+    
+        $input_data = $input['info'];
+        $data['first_name'] = $input_data['first_name'];
+        $data['last_name'] = $input_data['last_name'];
+        $data['email'] = $input_data['email'];
+        $data['mobile'] = $input_data['mobile'];
+        $data['role_id'] = $input_data['role_id'];
+
+        $checkData = DB::table('users')
+                    ->where('email','=',$input_data['email'])
+                    ->where('id','!=',$id)
+                    ->select('email')
+                    ->first();
+        if($checkData){
+            return response()->json(['error'=>"Email Already exists!"],401);
+        }
+       
+        $listId = DB::table('users')->where('id','=',$id)->update($data);
+        if($listId){
+            $result['result'] = 'Your record has been updated successfully! ';
             return response()->json(['result'=>$result]);
         }
-        return response()->json(['result'=>'Your profile update failed!!'],401);
+        return response()->json(['error'=>'Your record update failed!!'],401);
     }
+
+    
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Request $request ,$id)
+    {
+        //
+        $token = $this->getToken($request);
+    	$user = JWTAuth::toUser($token);
+        $input = $request->all();
+        
+        $data['status'] = 0;
+        $listId = DB::table('users')
+                ->where('id','=',$id)
+                ->update($data);  
+        
+        if($listId){
+            $result['info']['msg'] = 'Your record has been removed successfully';
+            return response()->json(['result'=>$result]);
+        }
+        return response()->json(['result'=>'Your record coud not removed!'],401);
+    }
+
 
     public function changePassword(Request $request)
     {
@@ -143,17 +230,6 @@ class UserController extends Controller
     	User::where('id', $id)->update(['password' => $new_password]);
         
     	return response()->json(["result"=>"Password Changed Successfully","user"=>$user,"pwd"=>$user->password]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 
     public function profile(Request $request){

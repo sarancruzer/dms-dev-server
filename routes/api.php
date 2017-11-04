@@ -54,25 +54,12 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	// Route::post('updateTerritory/{id}', 'TerritoryController@update');		
 	// Route::post('deleteTerritory/{id}', 'TerritoryController@destroy');	
 
-	// Route::post('getTerritory', 'TerritoryController@index');
-	// Route::post('addTerritory', 'TerritoryController@create');
-	// Route::post('updateTerritory/{id}', 'TerritoryController@update');		
-	// Route::post('deleteTerritory/{id}', 'TerritoryController@destroy');	
-
-	// Route::post('getTerritory', 'TerritoryController@index');
-	// Route::post('addTerritory', 'TerritoryController@create');
-	// Route::post('updateTerritory/{id}', 'TerritoryController@update');		
-	// Route::post('deleteTerritory/{id}', 'TerritoryController@destroy');	
-
-	// Route::post('getTerritory', 'TerritoryController@index');
-	// Route::post('addTerritory', 'TerritoryController@create');
-	// Route::post('updateTerritory/{id}', 'TerritoryController@update');		
-	// Route::post('deleteTerritory/{id}', 'TerritoryController@destroy');	
-
-	// Route::post('getTerritory', 'TerritoryController@index');
-	// Route::post('addTerritory', 'TerritoryController@create');
-	// Route::post('updateTerritory/{id}', 'TerritoryController@update');		
-	// Route::post('deleteTerritory/{id}', 'TerritoryController@destroy');	
+	//Manage Users
+	Route::post('getUser', 'UserController@index');
+	Route::post('addUser', 'UserController@create');
+	Route::post('getUserById/{id}', 'UserController@edit');
+	Route::post('updateUser/{id}', 'UserController@update');		
+	Route::post('deleteUser/{id}', 'UserController@destroy');	
 		
 });
 
