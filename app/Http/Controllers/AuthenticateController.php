@@ -46,8 +46,11 @@ class AuthenticateController extends Controller
     $details["mobile"] = $user->mobile;
     $details["avatar"] = $user->avatar;
     $details["user_type"] = $user->user_type;
-    
+
     User::where("id", $user->id)->update(array('last_login' => date("Y-m-d H:i:s") ));
+
+    $details['role_permissions'] = $this->getUserRolePermissions($user->role_id);
+
     
      $result = array();
      $result['info'] = $details;
@@ -58,6 +61,16 @@ class AuthenticateController extends Controller
     }
 
    
+   public function getUserRolePermissions($role_id){
+
+        $lists = DB::table('m_roles_modules as rm')
+                ->leftjoin('m_modules as m','m.id','=','rm.module_id')
+                ->select('rm.*','m.name as module_name','m.url as module_url')
+                ->where('rm.role_id','=',$role_id)
+                ->get();
+        
+        return $lists;
+   }
  
 
     public function userUpdate(Request $request){
