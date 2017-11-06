@@ -60,7 +60,9 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('getUserById/{id}', 'UserController@edit');
 	Route::post('updateUser/{id}', 'UserController@update');		
 	Route::post('deleteUser/{id}', 'UserController@destroy');	
-		
+
+	//get all Masters
+	Route::post('getMasters', 'MasterController@getMasterDetails');		
 });
 
 });

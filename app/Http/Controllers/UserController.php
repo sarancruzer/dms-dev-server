@@ -10,6 +10,19 @@ use DB;
 use Hash;
 class UserController extends Controller
 {
+
+    public function getToken($request)
+    {
+        $token = null; 
+        foreach (getallheaders() as $name => $value) {
+            if($name == "Authorization")
+            {
+                return $token = str_replace("Bearer ", "", $value);
+            }
+        }
+        return response()->json(['error' => "Authentication Not Provided"],401);
+   }
+   
     /**
      * Display a listing of the resource.
      *
@@ -63,9 +76,10 @@ class UserController extends Controller
         $input_data = $input['info'];
         $data['first_name'] = $input_data['first_name'];
         $data['last_name'] = $input_data['last_name'];
+        $data['password'] = Hash::make('123456');
         $data['email'] = $input_data['email'];
         $data['mobile'] = $input_data['mobile'];
-        $data['role_id'] = $input_data['role_id'];
+        $data['role_id'] = $input_data['role'];
         
         $checkData = DB::table('users')
                     ->where('email','=',$input_data['email'])

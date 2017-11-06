@@ -29,8 +29,8 @@ class MasterController extends Controller
     }
 
     public function getMasterDetails(Request $request){
-        //  $token = $this->getToken($request);
-        //  $user = JWTAuth::toUser($token);
+         $token = $this->getToken($request);
+         $user = JWTAuth::toUser($token);
          $input = $request->all();
         foreach ($input as $key => $value) {
             $lists[$value] = DB::table($value)->orderby('id')->get();
