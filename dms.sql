@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 04, 2017 at 05:33 PM
+-- Generation Time: Nov 06, 2017 at 03:15 PM
 -- Server version: 5.7.20-0ubuntu0.16.04.1
 -- PHP Version: 5.6.31-4+ubuntu16.04.1+deb.sury.org+4
 
@@ -384,12 +384,20 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `mobile`, `avatar`, `role_id`, `password`, `remember_token`, `last_login`, `created_at`, `updated_at`, `status`) VALUES
-(1, 'Saravanan', 'Nandhan', 'sarancruzer@dms.dev', '9597009544', NULL, 1, '$2y$10$qrH07lsBHNLs2uqPTWODcud.YAADJbRQUZK.UBwSqOfOWzd.5OLZq', NULL, '2017-11-04 09:10:08', '2017-10-10 06:56:39', '2017-11-04 03:40:08', 1),
+(1, 'Saravanan', 'Nandhan', 'sarancruzer@dms.dev', '9597009544', NULL, 1, '$2y$10$qrH07lsBHNLs2uqPTWODcud.YAADJbRQUZK.UBwSqOfOWzd.5OLZq', NULL, '2017-11-06 09:02:11', '2017-10-10 06:56:39', '2017-11-06 03:32:11', 1),
 (2, 'Admin', 'Admin', 'admin@dms.dev', '9895949134', NULL, NULL, '$2y$10$5bqyMsE21wzeOIyhAypSsuvu4vKgjaIEHlmbTooRisLqDErVsLDuC', NULL, NULL, '2017-10-10 06:56:39', '2017-10-10 06:56:39', 1),
 (3, 'Ryan', 'Chenkie', 'ryan@dms.dev', '', NULL, NULL, '$2y$10$KFvJlG/6gv3s1dJBM8wkXOgD3HCrYOt8uL2rsc7QdcAjG0lG1CSru', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
 (4, 'Chris', 'Sevilleja', 'chris@scotch.io', '', NULL, NULL, '$2y$10$o2FSLbo13cW2lA4N.9UpOuR9sbJECFGfzolAuVd6W7NWaAl4Vv9QS', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
 (5, 'Holly', 'Lloyd', 'holly@scotch.io', '', NULL, NULL, '$2y$10$9.UilQnDBoN7LhUizQtTI.OHPLsfOB3Hv/tN.1qvfu3HD2/2rbjnK', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
-(6, 'Adnan', 'Kukic', 'adnan@scotch.io', '', NULL, NULL, '$2y$10$BiYNacDyMoWOZKxIxmjenuiuGcO9a0ELwKmNbYyUBi6Yax5bAZE7m', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1);
+(6, 'Adnan', 'Kukic', 'adnan@scotch.io', '', NULL, NULL, '$2y$10$BiYNacDyMoWOZKxIxmjenuiuGcO9a0ELwKmNbYyUBi6Yax5bAZE7m', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
+(7, 'asdf', 'asdf', 'sarancruzer@gmail.com', '9597009544', NULL, 2, '$2y$10$mh5hZmivMjPGiuQ8nz.R4.Olptu37TPDdPqbhX5Hm1nY1uAqiMNqa', NULL, NULL, NULL, NULL, 1),
+(8, 'saravana', 'veg3', 'sarancruzerr@gmail.com', '9597009544', NULL, 1, '$2y$10$9GyykrUVC2Nte4DivSHcZeUAkQQPNDbxrplJmoc.dFPKZeXhDysHa', NULL, NULL, NULL, NULL, 1),
+(9, 'nandhan', 'guna', 'sarancruzer11@gmail.com', '9597009544', NULL, 2, '$2y$10$zO3i0x3GzSNQ9ebHaovVAOrQSvhIo40W0Gh9hjGn8Sy8c2mBMo6ku', NULL, NULL, NULL, NULL, 1),
+(10, 'saravana', 'asdf', 'sarancruzere@gmail.com', '234234234', NULL, 1, '$2y$10$KiNPoMujNokH4imyFFzi6edfyI5pDdGPsk2ZdbfPU40DpwTfY/7ji', NULL, NULL, NULL, NULL, 1),
+(11, 'sdf', 'sadf', 'asd@asdf.dfgasdf', '234234', NULL, 1, '$2y$10$H462WeMsDl8yO.Ra8eHJMevzQV.eBq3mPmf9VwolfSzR.BPMZyZL.', NULL, NULL, NULL, NULL, 1),
+(12, 'saravana', 'veg3', 'sarancruzesdfr@gmail.com', '9597009544', NULL, 1, '$2y$10$C24mhfNKNq.fz/KvO5kGAerpltZK9blUf71IETOQW4Dz3YWfYXteS', NULL, NULL, NULL, NULL, 1),
+(13, 'asdf', 'asdf', 'sarancruzsadfer@gmail.com', '234234', NULL, 1, '$2y$10$d3kLZ//24FTvcWqEIGS9/eXjmJllO61Gq1sgGvzfmstbrGRTtWHim', NULL, NULL, NULL, NULL, 1),
+(14, 'asdf', 'werwer', 'sarancruzer11s@gmail.com', '234234', NULL, 1, '$2y$10$TBut1QHeDNdnQVQx9NmqWerqdzEMJ6fNJqojPdRpVk35v/0P/MbcK', NULL, NULL, NULL, NULL, 1);
 
 --
 -- Indexes for dumped tables
@@ -560,7 +568,7 @@ ALTER TABLE `m_title`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
