@@ -49,6 +49,13 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('updateTitle/{id}', 'TitleController@update');		
 	Route::post('deleteTitle/{id}', 'TitleController@destroy');	
 
+	//Master modules
+	Route::post('getRole', 'RoleController@index');
+	Route::post('addRole', 'RoleController@create');
+	Route::post('updateRole/{id}', 'RoleController@update');		
+	Route::post('deleteRole/{id}', 'RoleController@destroy');
+	
+
 	// Route::post('getTerritory', 'TerritoryController@index');
 	// Route::post('addTerritory', 'TerritoryController@create');
 	// Route::post('updateTerritory/{id}', 'TerritoryController@update');		
