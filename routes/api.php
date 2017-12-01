@@ -68,6 +68,20 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('updateUser/{id}', 'UserController@update');		
 	Route::post('deleteUser/{id}', 'UserController@destroy');	
 
+	//Manage License
+	Route::post('getLicense', 'LicenseController@index');
+	Route::post('addLicense', 'LicenseController@create');
+	Route::post('getLicenseById/{id}', 'LicenseController@edit');
+	Route::post('updateLicense/{id}', 'LicenseController@update');		
+	Route::post('deleteLicense/{id}', 'LicenseController@destroy');	
+
+	//Manage Clients
+	Route::post('getClient', 'ClientController@index');
+	Route::post('addClient', 'ClientController@create');
+	Route::post('getClientById/{id}', 'ClientController@edit');
+	Route::post('updateClient/{id}', 'ClientController@update');		
+	Route::post('deleteClient/{id}', 'ClientController@destroy');	
+
 	//get all Masters
 	Route::post('getMasters', 'MasterController@getMasterDetails');		
 });
