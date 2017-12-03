@@ -36,15 +36,17 @@ class ClientController extends Controller
         $input = $request->all();
 
         $searchValue = $input['q'];
-        $lists = DB::table('users')
+        $lists = DB::table('clients as c')
+                ->leftjoin('m_state as s','s.id','=','c.state')
+                ->select('c.*','s.name as state')
                 ->where(function($query) use ($searchValue)
                 {
                     if(!empty($searchValue)):
-                        $query->where('name','LIKE',DB::raw("'%$searchValue%'"));
-                        $query->orWhere('email','LIKE',DB::raw("'%$searchValue%'"));
+                        $query->where('c.client_business','LIKE',DB::raw("'%$searchValue%'"));
+                        $query->orWhere('c.abn','LIKE',DB::raw("'%$searchValue%'"));
                     endif;
                 })
-                ->where('status','=',1)
+                ->where('c.status','=',1)
                 ->orderBy($input['column'],$input['orderby'])
                 ->paginate(5);        
                 //->toSql();        
@@ -74,22 +76,17 @@ class ClientController extends Controller
         }
 
         $input_data = $input['info'];
-        $data['first_name'] = $input_data['first_name'];
-        $data['last_name'] = $input_data['last_name'];
-        $data['password'] = Hash::make('123456');
-        $data['email'] = $input_data['email'];
-        $data['mobile'] = $input_data['mobile'];
-        $data['role_id'] = $input_data['role'];
+        $data = $input_data;
         
-        $checkData = DB::table('users')
-                    ->where('email','=',$input_data['email'])
-                    ->select('email')
+        $checkData = DB::table('clients')
+                    ->where('client_business','=',$input_data['client_business'])
+                    ->select('client_business')
                     ->first();
         if($checkData){
-                return response()->json(['error'=>"Email Already exists!"],401);
+                return response()->json(['error'=>"Client Business Already exists!"],401);
         }
         
-        $listId = DB::table('users')->insertGetId($data);
+        $listId = DB::table('clients')->insertGetId($data);
         $res_msg = "Your record has been inserted sucessfully";
         
         $result = array();
@@ -139,7 +136,7 @@ class ClientController extends Controller
             return response()->json(['error'=>'invalid entry!'],401);    
         }
         
-        $lists = DB::table('listings')->where('id','=',$id)->first();
+        $lists = DB::table('clients')->where('id','=',$id)->first();
         
         if(count($lists)>0){
             $result['info']['lists'] = $lists;
@@ -168,24 +165,22 @@ class ClientController extends Controller
         }
     
         $input_data = $input['info'];
-        $data['first_name'] = $input_data['first_name'];
-        $data['last_name'] = $input_data['last_name'];
-        $data['email'] = $input_data['email'];
-        $data['mobile'] = $input_data['mobile'];
-        $data['role_id'] = $input_data['role_id'];
-
-        $checkData = DB::table('users')
-                    ->where('email','=',$input_data['email'])
+        $data = $input_data;
+        
+        $checkData = DB::table('clients as c')
+                    ->where('c.client_business','=',$input_data['client_business'])
                     ->where('id','!=',$id)
-                    ->select('email')
+                    ->select('client_business')
                     ->first();
         if($checkData){
-            return response()->json(['error'=>"Email Already exists!"],401);
+            return response()->json(['error'=>"Client Business Already exists!"],401);
         }
        
-        $listId = DB::table('users')->where('id','=',$id)->update($data);
+        $listId = DB::table('clients')->where('id','=',$id)->update($data);
+        $res_msg = "Your record has been updated sucessfully";
+        $result = array();
         if($listId){
-            $result['result'] = 'Your record has been updated successfully! ';
+            $result['info']['msg'] = $res_msg;
             return response()->json(['result'=>$result]);
         }
         return response()->json(['error'=>'Your record update failed!!'],401);
@@ -207,7 +202,7 @@ class ClientController extends Controller
         $input = $request->all();
         
         $data['status'] = 0;
-        $listId = DB::table('users')
+        $listId = DB::table('clients')
                 ->where('id','=',$id)
                 ->update($data);  
         
