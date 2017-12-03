@@ -80,7 +80,14 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('addClient', 'ClientController@create');
 	Route::post('getClientById/{id}', 'ClientController@edit');
 	Route::post('updateClient/{id}', 'ClientController@update');		
-	Route::post('deleteClient/{id}', 'ClientController@destroy');	
+	Route::post('deleteClient/{id}', 'ClientController@destroy');
+
+	//Manage Project
+	Route::post('getProject', 'ProjectController@index');
+	Route::post('addProject', 'ProjectController@create');
+	Route::post('getProjectById/{id}', 'ProjectController@edit');
+	Route::post('updateProject/{id}', 'ProjectController@update');		
+	Route::post('deleteProject/{id}', 'ProjectController@destroy');	
 
 	//get all Masters
 	Route::post('getMasters', 'MasterController@getMasterDetails');		
