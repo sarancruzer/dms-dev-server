@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 01, 2017 at 08:21 PM
+-- Generation Time: Dec 09, 2017 at 06:17 PM
 -- Server version: 5.7.20-0ubuntu0.16.04.1
 -- PHP Version: 5.6.31-4+ubuntu16.04.1+deb.sury.org+4
 
@@ -46,6 +46,57 @@ CREATE TABLE `clients` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `status` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Dumping data for table `clients`
+--
+
+INSERT INTO `clients` (`id`, `client_business`, `client_company_name`, `abn`, `address1`, `address2`, `city`, `state`, `post_code`, `web_address`, `business_type`, `client_size`, `annual_turnover`, `manage_license`, `notes`, `created_at`, `updated_at`, `status`) VALUES
+(1, 'asdf', 'liijasdflj', 'sdklfj', 'adsflaskdfjo', 'asdfasdflkj', 'kadsjfladsjf', 2, 'asdfkj', 'asdfadsf', 1, 2, 'asdfsd', 2, 'asdfdfkljwerkjlkjlad kladsfjkljasldkf jdwf', '2017-12-02 16:53:15', '2017-12-02 16:53:15', 1),
+(2, 'Blah Blah', 'OPAT on the Park Pty Ltd', 'Unknown', '1 Turner Street', NULL, 'Abbotsford', 4, '3067', 'Bendigo', 16, 2, '20,000,000', 1, 'Problematic development - possible payment issue!', '2017-12-07 11:48:58', '2017-12-07 11:48:58', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `c_project_child`
+--
+
+CREATE TABLE `c_project_child` (
+  `id` int(11) NOT NULL,
+  `c_project_hdr_id` int(11) NOT NULL,
+  `building_class_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `c_project_child`
+--
+
+INSERT INTO `c_project_child` (`id`, `c_project_hdr_id`, `building_class_id`) VALUES
+(1, 1, 1),
+(2, 1, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `c_project_hdr`
+--
+
+CREATE TABLE `c_project_hdr` (
+  `id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL,
+  `project_type_id` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `c_project_hdr`
+--
+
+INSERT INTO `c_project_hdr` (`id`, `project_id`, `project_type_id`, `created_at`, `updated_at`, `status`) VALUES
+(1, 2, 1, '2017-12-08 18:08:18', '2017-12-08 18:08:18', 1),
+(2, 2, 2, '2017-12-08 18:08:18', '2017-12-08 18:08:18', 1);
 
 -- --------------------------------------------------------
 
@@ -109,12 +160,21 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 
 CREATE TABLE `m_building_class` (
   `id` int(11) NOT NULL,
+  `project_type_id` int(11) NOT NULL,
   `name` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `short_code` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `status` int(11) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '1',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Dumping data for table `m_building_class`
+--
+
+INSERT INTO `m_building_class` (`id`, `project_type_id`, `name`, `short_code`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 'buildingclass1', 'bc1', 1, '2017-12-08 17:00:34', '2017-12-08 17:00:34'),
+(2, 1, 'asdasd', '2345', 1, '2017-12-08 17:11:14', '2017-12-08 17:13:17');
 
 -- --------------------------------------------------------
 
@@ -130,6 +190,15 @@ CREATE TABLE `m_client_size` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Dumping data for table `m_client_size`
+--
+
+INSERT INTO `m_client_size` (`id`, `name`, `short_code`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Small', 'Small', 1, '2017-12-02 16:38:20', '2017-12-02 16:38:20'),
+(2, 'Medium', 'Medium', 1, '2017-12-02 16:39:00', '2017-12-02 16:39:00'),
+(3, 'Large', 'Large', 1, '2017-12-02 16:39:14', '2017-12-02 16:39:14');
 
 -- --------------------------------------------------------
 
@@ -153,22 +222,11 @@ CREATE TABLE `m_client_type` (
 INSERT INTO `m_client_type` (`id`, `name`, `short_code`, `status`, `created_at`, `updated_at`) VALUES
 (1, 'asdfasdfsdfsdf', 'aSDFSA', 1, '2017-10-19 13:01:10', '2017-10-19 13:01:10'),
 (2, 'sdfASDF', 'sdfRRRR', 1, '2017-10-19 13:01:17', '2017-10-19 13:01:29'),
-(3, 'asdfasdfsdfsdfasdf', 'WERWER', 1, '2017-10-19 13:06:04', '2017-10-19 13:06:04'),
-(4, 'sadfsadf', 'sadf', 1, '2017-10-19 14:08:02', '2017-10-19 14:10:17'),
-(5, 'sad', 'asdf', 1, '2017-10-19 14:37:05', '2017-10-19 14:37:05'),
-(6, 'sdf', 'sdf', 1, '2017-10-19 14:37:41', '2017-10-19 14:37:41'),
-(7, 'asdfasdf', 'aSDFsadf', 1, '2017-10-19 14:38:00', '2017-10-19 14:38:00'),
-(8, 'SAfsdf', 'sdfsdf', 1, '2017-10-19 14:38:33', '2017-10-19 14:38:33'),
-(9, 'asdfasdff', 'asdfsadf', 1, '2017-10-19 14:44:20', '2017-10-19 14:44:20'),
-(10, 'sdfASdfAASD', 'AAAfasdf', 1, '2017-10-28 11:27:22', '2017-10-28 11:27:22'),
-(11, 'sfsd', 'dgsd', 1, '2017-10-28 14:07:07', '2017-10-28 14:07:07'),
-(12, 'fghfgh', 'fgdfg', 1, '2017-10-28 14:11:07', '2017-10-28 14:11:07'),
-(13, 'asdasd', 'asdasd', 1, '2017-10-28 15:23:41', '2017-10-28 15:23:41'),
-(14, 'https://github.com', 'sdf', 1, '2017-10-31 12:00:05', '2017-10-31 12:00:05'),
-(15, 'https://github.comd', 'sdfsdf', 1, '2017-10-31 12:01:57', '2017-10-31 12:01:57'),
-(16, 'sdfadsfg', 'sdfsdf', 1, '2017-10-31 12:03:13', '2017-10-31 12:06:49'),
-(17, 'GGG', 'aSDasd', 1, '2017-10-31 12:11:06', '2017-10-31 12:11:18'),
-(18, 'sdFhtreee', 'SDF', 1, '2017-10-31 12:11:52', '2017-10-31 12:11:52');
+(14, 'Retailer', 'RTL', 1, '2017-10-31 12:00:05', '2017-12-04 22:13:04'),
+(15, 'Home Owner', 'HMO', 1, '2017-10-31 12:01:57', '2017-12-04 22:12:36'),
+(16, 'Developer', 'DEV', 1, '2017-10-31 12:03:13', '2017-12-04 22:12:03'),
+(17, 'Builder', 'BLD', 1, '2017-10-31 12:11:06', '2017-12-04 22:11:48'),
+(18, 'Architect', 'ARCH', 1, '2017-10-31 12:11:52', '2017-12-04 22:11:29');
 
 -- --------------------------------------------------------
 
@@ -178,8 +236,8 @@ INSERT INTO `m_client_type` (`id`, `name`, `short_code`, `status`, `created_at`,
 
 CREATE TABLE `m_modules` (
   `id` int(11) NOT NULL,
-  `name` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `url` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `url` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `status` int(11) NOT NULL DEFAULT '1'
@@ -200,9 +258,11 @@ INSERT INTO `m_modules` (`id`, `name`, `url`, `created_at`, `updated_at`, `statu
 (8, ' Manage Roles', '/manageRoles', '2017-11-03 12:15:14', '2017-11-03 12:15:14', 1),
 (9, 'Manage Modules', '/manageModules', '2017-11-03 12:15:14', '2017-11-04 12:44:45', 1),
 (10, ' Role Privilleges', '/rolePrivilleges', '2017-11-03 12:15:14', '2017-11-03 12:15:14', 1),
-(11, 'Manage Clients', '/manageClients', '2017-11-03 12:15:14', '2017-11-04 12:44:45', 1),
+(11, 'Manage Clients', '/manageClient', '2017-11-03 12:15:14', '2017-12-02 17:13:18', 1),
 (12, ' Manage License', '/manageLicense', '2017-11-03 12:15:14', '2017-11-03 12:15:14', 1),
-(13, 'Manage Modules', '/manageModules', '2017-11-03 12:15:14', '2017-11-04 12:44:45', 1);
+(13, 'Manage Modules', '/manageModules', '2017-11-03 12:15:14', '2017-11-04 12:44:45', 1),
+(14, 'Project Type', '/masters/projectType', '2017-11-03 12:15:14', '2017-12-08 12:57:33', 1),
+(15, 'Building Class', '/masters/buildingClass', '2017-11-03 12:15:14', '2017-12-08 12:57:36', 1);
 
 -- --------------------------------------------------------
 
@@ -264,6 +324,14 @@ CREATE TABLE `m_project_type` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+--
+-- Dumping data for table `m_project_type`
+--
+
+INSERT INTO `m_project_type` (`id`, `name`, `short_code`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'project type1', 'pt1', 1, '2017-12-08 14:26:57', '2017-12-08 14:26:57'),
+(2, 'project type2', 'pt2', 1, '2017-12-08 14:27:15', '2017-12-08 14:27:15');
+
 -- --------------------------------------------------------
 
 --
@@ -324,7 +392,9 @@ INSERT INTO `m_roles_modules` (`id`, `role_id`, `module_id`, `create_c`, `read_r
 (10, 1, 10, 'yes', 'yes', 'yes', 'yes', '2017-11-03 12:23:34', '2017-11-04 12:05:58', 1),
 (11, 1, 11, 'yes', 'yes', 'yes', 'yes', '2017-11-03 12:23:34', '2017-11-04 12:05:59', 1),
 (12, 1, 12, 'yes', 'yes', 'yes', 'yes', '2017-11-03 12:23:34', '2017-11-04 12:06:01', 1),
-(13, 1, 13, 'yes', 'yes', 'yes', 'yes', '2017-11-03 12:23:34', '2017-11-04 12:06:03', 1);
+(13, 1, 13, 'yes', 'yes', 'yes', 'yes', '2017-11-03 12:23:34', '2017-11-04 12:06:03', 1),
+(14, 1, 14, 'yes', 'yes', 'yes', 'yes', '2017-11-03 12:23:34', '2017-11-04 12:06:01', 1),
+(15, 1, 15, 'yes', 'yes', 'yes', 'yes', '2017-11-03 12:23:34', '2017-11-04 12:06:03', 1);
 
 -- --------------------------------------------------------
 
@@ -346,8 +416,11 @@ CREATE TABLE `m_state` (
 --
 
 INSERT INTO `m_state` (`id`, `name`, `short_code`, `status`, `created_at`, `updated_at`) VALUES
-(2, 'TAMILNADU', 'TN', 1, '2017-10-19 12:53:13', '2017-10-28 11:10:53'),
-(4, 'DELHI', 'DE', 1, '2017-10-28 11:10:35', '2017-10-28 11:10:35');
+(2, 'New South Wales', 'NSW', 1, '2017-10-19 12:53:13', '2017-12-04 22:02:04'),
+(4, 'Victoria', 'VIC', 1, '2017-10-28 11:10:35', '2017-12-04 22:01:43'),
+(5, 'South Australia', 'SA', 1, '2017-12-04 22:02:26', '2017-12-04 22:02:26'),
+(6, 'Western Australia', 'WA', 1, '2017-12-04 22:02:57', '2017-12-04 22:02:57'),
+(7, 'Tasmania', 'TAS', 1, '2017-12-04 22:03:15', '2017-12-04 22:03:15');
 
 -- --------------------------------------------------------
 
@@ -379,10 +452,11 @@ INSERT INTO `m_territory` (`id`, `name`, `short_code`, `status`, `created_at`, `
 (14, 'created', 'CR', 1, '2017-10-17 10:49:32', '2017-10-17 10:49:32'),
 (15, 'TREAT', 'CHECK', 1, '2017-10-17 10:50:17', '2017-10-17 10:50:17'),
 (17, 'ASDF', 'QWER', 1, '2017-10-17 15:03:55', '2017-10-17 15:03:55'),
-(18, 'welcome ', 'TOAST', 1, '2017-10-17 15:51:51', '2017-10-17 15:51:51'),
-(19, 'welcome 2', 'TOA', 1, '2017-10-17 15:53:18', '2017-10-17 15:53:18'),
-(20, 'sadfTR', 'TREEE', 1, '2017-10-17 15:54:56', '2017-10-17 15:54:56'),
-(21, 'new territory', 'nty', 1, '2017-10-28 11:23:29', '2017-10-28 11:23:29');
+(18, 'Western Australia', 'WA', 1, '2017-10-17 15:51:51', '2017-12-04 21:56:52'),
+(19, 'Victoria', 'VIC', 1, '2017-10-17 15:53:18', '2017-12-04 21:56:08'),
+(20, 'Geelong District VIC', 'V-GEEL', 1, '2017-10-17 15:54:56', '2017-12-04 21:59:52'),
+(21, 'new territory', 'nty', 1, '2017-10-28 11:23:29', '2017-10-28 11:23:29'),
+(22, 'builder', 'BBB', 1, '2017-12-07 03:35:13', '2017-12-07 03:35:13');
 
 -- --------------------------------------------------------
 
@@ -404,7 +478,9 @@ CREATE TABLE `m_title` (
 --
 
 INSERT INTO `m_title` (`id`, `name`, `short_code`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'new title one', 'ntt', 1, '2017-10-28 11:22:41', '2017-10-28 11:22:55');
+(1, 'Mr', 'Mr', 1, '2017-10-28 11:22:41', '2017-12-04 22:03:44'),
+(2, 'Mrs', 'Mrs', 1, '2017-12-04 22:03:53', '2017-12-04 22:03:53'),
+(3, 'Ms', 'Ms', 1, '2017-12-04 22:04:13', '2017-12-04 22:04:13');
 
 -- --------------------------------------------------------
 
@@ -417,6 +493,41 @@ CREATE TABLE `password_resets` (
   `token` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `project`
+--
+
+CREATE TABLE `project` (
+  `id` int(11) NOT NULL,
+  `project_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `address1` text COLLATE utf8_unicode_ci NOT NULL,
+  `address2` text COLLATE utf8_unicode_ci,
+  `city` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `state` int(11) NOT NULL,
+  `post_code` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `client_name` int(11) NOT NULL,
+  `project_status` int(11) NOT NULL,
+  `description` text COLLATE utf8_unicode_ci,
+  `website` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `levels_begin` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `levels_end` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `construction_start` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `construction_duration` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `project`
+--
+
+INSERT INTO `project` (`id`, `project_name`, `address1`, `address2`, `city`, `state`, `post_code`, `client_name`, `project_status`, `description`, `website`, `levels_begin`, `levels_end`, `construction_start`, `construction_duration`, `created_at`, `updated_at`, `status`) VALUES
+(1, 'PROJECT NAMES', 'kjlasdfxdfgdf', 'klasjdf', 'klasdf', 2, 'asdfkj', 1, 1, 'asdf', 'asdf', 'asdf', '2sadf', 'wer', 'GGHHHHHhg', '2017-12-03 23:17:14', '2017-12-03 23:17:14', 1),
+(2, 'abcdcefrtttttttt', '45  jjjjjjjjjjjj', '6 Mackillop Drive', 'sydney', 2, '2153', 1, 1, 'builders', 'www.abcd.com', '5', '7', '4t nov', '10 months', '2017-12-07 03:32:30', '2017-12-07 03:32:30', 1);
 
 -- --------------------------------------------------------
 
@@ -445,20 +556,16 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `mobile`, `avatar`, `role_id`, `password`, `remember_token`, `last_login`, `created_at`, `updated_at`, `status`) VALUES
-(1, 'Saravanan', 'Nandhan', 'sarancruzer@dms.dev', '9597009544', NULL, 1, '$2y$10$qrH07lsBHNLs2uqPTWODcud.YAADJbRQUZK.UBwSqOfOWzd.5OLZq', NULL, '2017-12-01 08:48:34', '2017-10-10 06:56:39', '2017-12-01 03:18:34', 1),
-(2, 'Admin', 'Admin', 'admin@dms.dev', '9895949134', NULL, NULL, '$2y$10$5bqyMsE21wzeOIyhAypSsuvu4vKgjaIEHlmbTooRisLqDErVsLDuC', NULL, NULL, '2017-10-10 06:56:39', '2017-10-10 06:56:39', 1),
-(3, 'Ryan', 'Chenkie', 'ryan@dms.dev', '', NULL, NULL, '$2y$10$KFvJlG/6gv3s1dJBM8wkXOgD3HCrYOt8uL2rsc7QdcAjG0lG1CSru', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
-(4, 'Chris', 'Sevilleja', 'chris@scotch.io', '', NULL, NULL, '$2y$10$o2FSLbo13cW2lA4N.9UpOuR9sbJECFGfzolAuVd6W7NWaAl4Vv9QS', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
+(1, 'Saravanan', 'Nandhan', 'sarancruzer@dms.dev', '9597009544', NULL, 1, '$2y$10$qrH07lsBHNLs2uqPTWODcud.YAADJbRQUZK.UBwSqOfOWzd.5OLZq', NULL, '2017-12-04 10:30:34', '2017-10-10 06:56:39', '2017-12-04 10:30:34', 1),
+(2, 'Suresh', 'Varan', 'suresh@dms.dev', '9895949134', NULL, 1, '$2y$10$5bqyMsE21wzeOIyhAypSsuvu4vKgjaIEHlmbTooRisLqDErVsLDuC', NULL, '2017-12-05 00:26:48', '2017-10-10 06:56:39', '2017-12-05 00:26:48', 1),
+(3, 'David', 'David', 'david@dms.dev', '', NULL, 1, '$2y$10$qrH07lsBHNLs2uqPTWODcud.YAADJbRQUZK.UBwSqOfOWzd.5OLZq', NULL, '2017-12-09 12:32:36', '2017-10-10 06:56:40', '2017-12-09 07:02:36', 1),
+(4, 'Chris', 'Sevilleja', 'chris@scotch.io', '', NULL, 1, '$2y$10$o2FSLbo13cW2lA4N.9UpOuR9sbJECFGfzolAuVd6W7NWaAl4Vv9QS', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
 (5, 'Holly', 'Lloyd', 'holly@scotch.io', '', NULL, NULL, '$2y$10$9.UilQnDBoN7LhUizQtTI.OHPLsfOB3Hv/tN.1qvfu3HD2/2rbjnK', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
-(6, 'Adnan', 'Kukic', 'adnan@scotch.io', '', NULL, NULL, '$2y$10$BiYNacDyMoWOZKxIxmjenuiuGcO9a0ELwKmNbYyUBi6Yax5bAZE7m', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
-(7, 'asdf', 'asdf', 'sarancruzer@gmail.com', '9597009544', NULL, 2, '$2y$10$mh5hZmivMjPGiuQ8nz.R4.Olptu37TPDdPqbhX5Hm1nY1uAqiMNqa', NULL, NULL, NULL, NULL, 1),
 (8, 'saravana', 'veg3', 'sarancruzerr@gmail.com', '9597009544', NULL, 1, '$2y$10$9GyykrUVC2Nte4DivSHcZeUAkQQPNDbxrplJmoc.dFPKZeXhDysHa', NULL, NULL, NULL, NULL, 1),
-(9, 'nandhan', 'guna', 'sarancruzer11@gmail.com', '9597009544', NULL, 2, '$2y$10$zO3i0x3GzSNQ9ebHaovVAOrQSvhIo40W0Gh9hjGn8Sy8c2mBMo6ku', NULL, NULL, NULL, NULL, 1),
-(10, 'saravana', 'asdf', 'sarancruzere@gmail.com', '234234234', NULL, 1, '$2y$10$KiNPoMujNokH4imyFFzi6edfyI5pDdGPsk2ZdbfPU40DpwTfY/7ji', NULL, NULL, NULL, NULL, 1),
-(11, 'sdf', 'sadf', 'asd@asdf.dfgasdf', '234234', NULL, 1, '$2y$10$H462WeMsDl8yO.Ra8eHJMevzQV.eBq3mPmf9VwolfSzR.BPMZyZL.', NULL, NULL, NULL, NULL, 1),
 (12, 'saravana', 'veg3', 'sarancruzesdfr@gmail.com', '9597009544', NULL, 1, '$2y$10$C24mhfNKNq.fz/KvO5kGAerpltZK9blUf71IETOQW4Dz3YWfYXteS', NULL, NULL, NULL, NULL, 1),
 (13, 'asdf', 'asdf', 'sarancruzsadfer@gmail.com', '234234', NULL, 1, '$2y$10$d3kLZ//24FTvcWqEIGS9/eXjmJllO61Gq1sgGvzfmstbrGRTtWHim', NULL, NULL, NULL, NULL, 1),
-(14, 'asdf', 'werwer', 'sarancruzer11s@gmail.com', '234234', NULL, 1, '$2y$10$TBut1QHeDNdnQVQx9NmqWerqdzEMJ6fNJqojPdRpVk35v/0P/MbcK', NULL, NULL, NULL, NULL, 1);
+(14, 'asdf', 'werwer', 'sarancruzer11s@gmail.com', '234234', NULL, 1, '$2y$10$TBut1QHeDNdnQVQx9NmqWerqdzEMJ6fNJqojPdRpVk35v/0P/MbcK', NULL, NULL, NULL, NULL, 1),
+(15, 'Martin', 'Vana', 'mvana@sourcecorpvic.com.au', '7499084054', NULL, 2, '$2y$10$EwAGYlzI2sZ1wi.YHacvQeZ1BgnW7smEAkvTX1TfbfZY3Y2rFdnYm', NULL, NULL, NULL, NULL, 1);
 
 --
 -- Indexes for dumped tables
@@ -468,6 +575,18 @@ INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `mobile`, `avatar
 -- Indexes for table `clients`
 --
 ALTER TABLE `clients`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `c_project_child`
+--
+ALTER TABLE `c_project_child`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `c_project_hdr`
+--
+ALTER TABLE `c_project_hdr`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -486,6 +605,12 @@ ALTER TABLE `migrations`
 -- Indexes for table `m_building_class`
 --
 ALTER TABLE `m_building_class`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `m_client_size`
+--
+ALTER TABLE `m_client_size`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -562,6 +687,12 @@ ALTER TABLE `password_resets`
   ADD KEY `password_resets_token_index` (`token`);
 
 --
+-- Indexes for table `project`
+--
+ALTER TABLE `project`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -576,7 +707,17 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT for table `c_project_child`
+--
+ALTER TABLE `c_project_child`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT for table `c_project_hdr`
+--
+ALTER TABLE `c_project_hdr`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `license`
 --
@@ -591,7 +732,12 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `m_building_class`
 --
 ALTER TABLE `m_building_class`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT for table `m_client_size`
+--
+ALTER TABLE `m_client_size`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `m_client_type`
 --
@@ -601,7 +747,7 @@ ALTER TABLE `m_client_type`
 -- AUTO_INCREMENT for table `m_modules`
 --
 ALTER TABLE `m_modules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 --
 -- AUTO_INCREMENT for table `m_product_size`
 --
@@ -621,7 +767,7 @@ ALTER TABLE `m_project_status`
 -- AUTO_INCREMENT for table `m_project_type`
 --
 ALTER TABLE `m_project_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `m_roles`
 --
@@ -631,27 +777,32 @@ ALTER TABLE `m_roles`
 -- AUTO_INCREMENT for table `m_roles_modules`
 --
 ALTER TABLE `m_roles_modules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 --
 -- AUTO_INCREMENT for table `m_state`
 --
 ALTER TABLE `m_state`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT for table `m_territory`
 --
 ALTER TABLE `m_territory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 --
 -- AUTO_INCREMENT for table `m_title`
 --
 ALTER TABLE `m_title`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+--
+-- AUTO_INCREMENT for table `project`
+--
+ALTER TABLE `project`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

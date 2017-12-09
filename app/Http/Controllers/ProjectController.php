@@ -214,5 +214,40 @@ class ProjectController extends Controller
         return response()->json(['result'=>'Your record coud not removed!'],401);
     }
 
+    
+    public function getConfigureProjectById(Request $request , $id)
+    {   
+        $token = $this->getToken($request);
+    	$user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+        
+        $project_types = DB::table('c_project_hdr as cph')
+                    ->leftjoin('m_project_type as mpt','mpt.id','=','cph.project_type_id')
+                    ->select('cph.id','mpt.name as project_type')
+                    ->where('project_id','=',$id)
+                    ->get();
+
+        foreach ($project_types as $key => $value) {            
+            $building_class = DB::table('c_project_child')
+            ->where('c_project_hdr_id','=',$value->id)
+            ->get();
+
+        $project_types[$key]->building_class = $building_class;
+        }                        
+        
+        if(count($project_types)>0){
+            $result['info']['lists'] = $project_types;
+            return response()->json(['result'=>$result]);
+        }
+        return response()->json(['error'=>'No results found!'],401);
+                            
+        
+    }
+
+
 
 }
