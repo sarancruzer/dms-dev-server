@@ -102,6 +102,7 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('deleteProject/{id}', 'ProjectController@destroy');	
 
 	Route::post('getConfigureProjectById/{id}', 'ProjectController@getConfigureProjectById');
+	Route::post('updateConfigureProject/{id}', 'ProjectController@updateConfigureProject');		
 
 	//get all Masters
 	Route::post('getMasters', 'MasterController@getMasterDetails');		

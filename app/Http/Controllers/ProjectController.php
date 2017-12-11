@@ -248,6 +248,40 @@ class ProjectController extends Controller
         
     }
 
+    public function updateConfigureProject(Request $request, $id)
+    {
+        $token = $this->getToken($request);
+    	$user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+    
+        $input_data = $input['info'];
+        $data = $input_data;
+        
+        $checkData = DB::table('project as p')
+                    ->where('p.project_name','=',$input_data['project_name'])
+                    ->where('id','!=',$id)
+                    ->select('project_name')
+                    ->first();
+        if($checkData){
+            return response()->json(['error'=>"Project Name Already exists!"],401);
+        }
+       
+        $listId = DB::table('project')->where('id','=',$id)->update($data);
+        $res_msg = "Your record has been updated sucessfully";
+        $result = array();
+        if($listId){
+            $result['info']['msg'] = $res_msg;
+            return response()->json(['result'=>$result]);
+        }
+        return response()->json(['error'=>'Your record update failed!!'],401);
+    }
+
+
+    
 
 
 }
