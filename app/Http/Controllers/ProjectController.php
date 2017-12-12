@@ -227,7 +227,7 @@ class ProjectController extends Controller
         
         $project_types = DB::table('c_project_hdr as cph')
                     ->leftjoin('m_project_type as mpt','mpt.id','=','cph.project_type_id')
-                    ->select('cph.id','mpt.name as project_type')
+                    ->select('cph.id','cph.project_type_id','mpt.name as project_type')
                     ->where('project_id','=',$id)
                     ->get();
 
@@ -257,23 +257,34 @@ class ProjectController extends Controller
         if($id == null){
             return response()->json(['error'=>'invalid entry!'],401);    
         }
-    
-        $input_data = $input['info'];
-        $data = $input_data;
         
-        $checkData = DB::table('project as p')
-                    ->where('p.project_name','=',$input_data['project_name'])
-                    ->where('id','!=',$id)
-                    ->select('project_name')
-                    ->first();
-        if($checkData){
-            return response()->json(['error'=>"Project Name Already exists!"],401);
+    
+        $input_data = $input['info']['project_details'];
+        $data = $input_data;
+
+        DB::table('c_project_hdr')->where('project_id','=',$id)->delete();
+        DB::table('c_project_child')->where('project_id','=',$id)->delete();
+        
+        
+        foreach ($data as $key => $value) {
+            $p_hdr_data['project_id'] = $id;
+            $p_hdr_data['project_type_id'] = $value['project_type'];
+           
+            $hdrId = DB::table('c_project_hdr')->insertGetId($p_hdr_data);
+
+            foreach ($value['building_details'] as $k => $val) {            
+                $p_chld_data['c_project_hdr_id'] = $hdrId;
+                $p_chld_data['project_id'] = $id;
+                $p_chld_data['building_class_id'] = $val['building_class'];
+                $p_chld_data['building_units'] = $val['building_units'];
+                
+                $childId = DB::table('c_project_child')->insertGetId($p_chld_data);                    
+            }
         }
-       
-        $listId = DB::table('project')->where('id','=',$id)->update($data);
+
         $res_msg = "Your record has been updated sucessfully";
         $result = array();
-        if($listId){
+        if($hdrId){
             $result['info']['msg'] = $res_msg;
             return response()->json(['result'=>$result]);
         }
