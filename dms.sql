@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 09, 2017 at 06:17 PM
+-- Generation Time: Dec 13, 2017 at 09:15 PM
 -- Server version: 5.7.20-0ubuntu0.16.04.1
--- PHP Version: 5.6.31-4+ubuntu16.04.1+deb.sury.org+4
+-- PHP Version: 5.6.32-1+ubuntu16.04.1+deb.sury.org+2
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -63,17 +63,25 @@ INSERT INTO `clients` (`id`, `client_business`, `client_company_name`, `abn`, `a
 
 CREATE TABLE `c_project_child` (
   `id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL,
   `c_project_hdr_id` int(11) NOT NULL,
-  `building_class_id` int(11) NOT NULL
+  `building_class_id` int(11) NOT NULL,
+  `building_units` varchar(10) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `c_project_child`
 --
 
-INSERT INTO `c_project_child` (`id`, `c_project_hdr_id`, `building_class_id`) VALUES
-(1, 1, 1),
-(2, 1, 2);
+INSERT INTO `c_project_child` (`id`, `project_id`, `c_project_hdr_id`, `building_class_id`, `building_units`) VALUES
+(31, 3, 18, 1, '55'),
+(32, 3, 18, 2, '66'),
+(33, 3, 18, 2, '12'),
+(34, 1, 19, 1, '10'),
+(35, 1, 19, 2, '10'),
+(36, 1, 20, 1, '101'),
+(37, 1, 20, 2, '102'),
+(38, 1, 20, 1, '33');
 
 -- --------------------------------------------------------
 
@@ -95,8 +103,9 @@ CREATE TABLE `c_project_hdr` (
 --
 
 INSERT INTO `c_project_hdr` (`id`, `project_id`, `project_type_id`, `created_at`, `updated_at`, `status`) VALUES
-(1, 2, 1, '2017-12-08 18:08:18', '2017-12-08 18:08:18', 1),
-(2, 2, 2, '2017-12-08 18:08:18', '2017-12-08 18:08:18', 1);
+(18, 3, 1, '2017-12-12 17:31:13', '2017-12-12 17:31:13', 1),
+(19, 1, 1, '2017-12-12 17:40:50', '2017-12-12 17:40:50', 1),
+(20, 1, 2, '2017-12-12 17:40:50', '2017-12-12 17:40:50', 1);
 
 -- --------------------------------------------------------
 
@@ -231,6 +240,65 @@ INSERT INTO `m_client_type` (`id`, `name`, `short_code`, `status`, `created_at`,
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `m_contacts`
+--
+
+CREATE TABLE `m_contacts` (
+  `id` int(11) NOT NULL,
+  `client_name` int(11) NOT NULL,
+  `title` int(11) NOT NULL,
+  `first_name` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `surename` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `salutation` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `job_title` int(11) NOT NULL,
+  `mobile` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `email` text COLLATE utf8_unicode_ci NOT NULL,
+  `skype` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `wechat` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `notes` text COLLATE utf8_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `m_contacts`
+--
+
+INSERT INTO `m_contacts` (`id`, `client_name`, `title`, `first_name`, `surename`, `salutation`, `job_title`, `mobile`, `email`, `skype`, `wechat`, `notes`, `created_at`, `updated_at`, `status`) VALUES
+(1, 1, 1, 'ramanathan', 'p', 'testing', 1, '234234234', 'asdfadsf', '', '', '', '2017-12-13 11:39:13', '2017-12-13 11:39:13', 1),
+(2, 1, 1, 'iyappan', 'p', 'testing', 2, '234234234', 'asdfadsf', '', '', '', '2017-12-13 11:39:13', '2017-12-13 11:39:13', 1),
+(3, 1, 1, 'sudalai', 'manik', 'testing', 3, '234234234', 'asdfadsf', '', '', '', '2017-12-13 11:39:13', '2017-12-13 11:39:13', 1),
+(4, 1, 1, 'mani', 'kandan', 'testing', 4, '234234234', 'asdfadsf', '', '', '', '2017-12-13 11:39:13', '2017-12-13 11:39:13', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `m_job_title`
+--
+
+CREATE TABLE `m_job_title` (
+  `id` int(11) NOT NULL,
+  `name` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `short_code` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `m_job_title`
+--
+
+INSERT INTO `m_job_title` (`id`, `name`, `short_code`, `created_at`, `updated_at`, `status`) VALUES
+(1, 'Project Manager', 'PM', '2017-12-13 11:33:16', '2017-12-13 11:33:16', 1),
+(2, 'Developer', 'DEV', '2017-12-13 11:33:16', '2017-12-13 11:33:25', 1),
+(3, 'Estimator', 'ES', '2017-12-13 11:33:16', '2017-12-13 11:33:16', 1),
+(4, 'Site Manager', 'SM', '2017-12-13 11:33:16', '2017-12-13 11:33:25', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `m_modules`
 --
 
@@ -293,6 +361,16 @@ CREATE TABLE `m_project_scope` (
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Dumping data for table `m_project_scope`
+--
+
+INSERT INTO `m_project_scope` (`id`, `name`, `short_code`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Aluminium Windows', 'ALW', 1, '2017-12-13 20:01:21', '2017-12-13 20:01:21'),
+(2, 'Aluminium Doors', 'ALD', 1, '2017-12-13 20:01:21', '2017-12-13 20:01:21'),
+(3, 'Curtain Wall', 'ALC', 1, '2017-12-13 20:01:21', '2017-12-13 20:01:21'),
+(4, 'Aluminium Louvres', 'ALL', 1, '2017-12-13 20:01:21', '2017-12-13 20:01:21');
 
 -- --------------------------------------------------------
 
@@ -527,7 +605,38 @@ CREATE TABLE `project` (
 
 INSERT INTO `project` (`id`, `project_name`, `address1`, `address2`, `city`, `state`, `post_code`, `client_name`, `project_status`, `description`, `website`, `levels_begin`, `levels_end`, `construction_start`, `construction_duration`, `created_at`, `updated_at`, `status`) VALUES
 (1, 'PROJECT NAMES', 'kjlasdfxdfgdf', 'klasjdf', 'klasdf', 2, 'asdfkj', 1, 1, 'asdf', 'asdf', 'asdf', '2sadf', 'wer', 'GGHHHHHhg', '2017-12-03 23:17:14', '2017-12-03 23:17:14', 1),
-(2, 'abcdcefrtttttttt', '45  jjjjjjjjjjjj', '6 Mackillop Drive', 'sydney', 2, '2153', 1, 1, 'builders', 'www.abcd.com', '5', '7', '4t nov', '10 months', '2017-12-07 03:32:30', '2017-12-07 03:32:30', 1);
+(2, 'abcdcefrtttttttt', '45  jjjjjjjjjjjj', '6 Mackillop Drive', 'sydney', 2, '2153', 1, 1, 'builders', 'www.abcd.com', '5', '7', '4t nov', '10 months', '2017-12-07 03:32:30', '2017-12-07 03:32:30', 1),
+(3, 'sadf', 'sdf', 'sdf', 'sdf', 5, 's234', 2, 1, 'sadf', 'sdf', 'sdf', 'sdf', 'sdf', 'sdf', '2017-12-12 15:57:01', '2017-12-12 15:57:01', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `project_team`
+--
+
+CREATE TABLE `project_team` (
+  `id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL,
+  `developer` int(11) NOT NULL,
+  `project_manager` int(11) NOT NULL,
+  `estimator` int(11) NOT NULL,
+  `site_manager` int(11) NOT NULL,
+  `architech` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `engineer` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `building_surveyor` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `quantity_surveyor` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `superintendent` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `project_team`
+--
+
+INSERT INTO `project_team` (`id`, `project_id`, `developer`, `project_manager`, `estimator`, `site_manager`, `architech`, `engineer`, `building_surveyor`, `quantity_surveyor`, `superintendent`, `created_at`, `updated_at`, `status`) VALUES
+(1, 1, 1, 2, 3, 4, 'asdf', 'asdf', 'asdf', 'asdf', 'asdasdfasdasdfASDFS', '2017-12-13 12:44:30', '2017-12-13 19:55:14', 1);
 
 -- --------------------------------------------------------
 
@@ -558,7 +667,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `mobile`, `avatar`, `role_id`, `password`, `remember_token`, `last_login`, `created_at`, `updated_at`, `status`) VALUES
 (1, 'Saravanan', 'Nandhan', 'sarancruzer@dms.dev', '9597009544', NULL, 1, '$2y$10$qrH07lsBHNLs2uqPTWODcud.YAADJbRQUZK.UBwSqOfOWzd.5OLZq', NULL, '2017-12-04 10:30:34', '2017-10-10 06:56:39', '2017-12-04 10:30:34', 1),
 (2, 'Suresh', 'Varan', 'suresh@dms.dev', '9895949134', NULL, 1, '$2y$10$5bqyMsE21wzeOIyhAypSsuvu4vKgjaIEHlmbTooRisLqDErVsLDuC', NULL, '2017-12-05 00:26:48', '2017-10-10 06:56:39', '2017-12-05 00:26:48', 1),
-(3, 'David', 'David', 'david@dms.dev', '', NULL, 1, '$2y$10$qrH07lsBHNLs2uqPTWODcud.YAADJbRQUZK.UBwSqOfOWzd.5OLZq', NULL, '2017-12-09 12:32:36', '2017-10-10 06:56:40', '2017-12-09 07:02:36', 1),
+(3, 'David', 'David', 'david@dms.dev', '', NULL, 1, '$2y$10$qrH07lsBHNLs2uqPTWODcud.YAADJbRQUZK.UBwSqOfOWzd.5OLZq', NULL, '2017-12-13 13:49:46', '2017-10-10 06:56:40', '2017-12-13 08:19:46', 1),
 (4, 'Chris', 'Sevilleja', 'chris@scotch.io', '', NULL, 1, '$2y$10$o2FSLbo13cW2lA4N.9UpOuR9sbJECFGfzolAuVd6W7NWaAl4Vv9QS', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
 (5, 'Holly', 'Lloyd', 'holly@scotch.io', '', NULL, NULL, '$2y$10$9.UilQnDBoN7LhUizQtTI.OHPLsfOB3Hv/tN.1qvfu3HD2/2rbjnK', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
 (8, 'saravana', 'veg3', 'sarancruzerr@gmail.com', '9597009544', NULL, 1, '$2y$10$9GyykrUVC2Nte4DivSHcZeUAkQQPNDbxrplJmoc.dFPKZeXhDysHa', NULL, NULL, NULL, NULL, 1),
@@ -617,6 +726,18 @@ ALTER TABLE `m_client_size`
 -- Indexes for table `m_client_type`
 --
 ALTER TABLE `m_client_type`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `m_contacts`
+--
+ALTER TABLE `m_contacts`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `m_job_title`
+--
+ALTER TABLE `m_job_title`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -693,6 +814,12 @@ ALTER TABLE `project`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `project_team`
+--
+ALTER TABLE `project_team`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -712,12 +839,12 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT for table `c_project_child`
 --
 ALTER TABLE `c_project_child`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 --
 -- AUTO_INCREMENT for table `c_project_hdr`
 --
 ALTER TABLE `c_project_hdr`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 --
 -- AUTO_INCREMENT for table `license`
 --
@@ -744,6 +871,16 @@ ALTER TABLE `m_client_size`
 ALTER TABLE `m_client_type`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 --
+-- AUTO_INCREMENT for table `m_contacts`
+--
+ALTER TABLE `m_contacts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+--
+-- AUTO_INCREMENT for table `m_job_title`
+--
+ALTER TABLE `m_job_title`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+--
 -- AUTO_INCREMENT for table `m_modules`
 --
 ALTER TABLE `m_modules`
@@ -757,7 +894,7 @@ ALTER TABLE `m_product_size`
 -- AUTO_INCREMENT for table `m_project_scope`
 --
 ALTER TABLE `m_project_scope`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `m_project_status`
 --
@@ -797,7 +934,12 @@ ALTER TABLE `m_title`
 -- AUTO_INCREMENT for table `project`
 --
 ALTER TABLE `project`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+--
+-- AUTO_INCREMENT for table `project_team`
+--
+ALTER TABLE `project_team`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `users`
 --
