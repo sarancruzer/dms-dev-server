@@ -292,6 +292,59 @@ class ProjectController extends Controller
     }
 
 
+
+    public function getProjectTeamById(Request $request , $id)
+    {   
+        $token = $this->getToken($request);
+    	$user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+        
+        $lists = DB::table('project_team')->where('id','=',$id)->first();
+        
+        if(count($lists)>0){
+            $result['info']['lists'] = $lists;
+            return response()->json(['result'=>$result]);
+        }
+        return response()->json(['error'=>'Your listing has been coud not added!'],401);
+                            
+        
+    }
+
+    public function updateProjectTeam(Request $request, $id)
+    {
+        $token = $this->getToken($request);
+    	$user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+    
+        $input_data = $input['info'];
+        $data = $input_data;
+        $data['project_id'] = $id;
+
+        $check_data = DB::table('project_team')->where('project_id','=',$id)->first();
+        if(empty($check_data)){
+            $listId = DB::table('project_team')->insertGetId($data);
+            $res_msg = "Your record has been inserted sucessfully";
+        }else{
+            $listId = DB::table('project_team')->where('id','=',$id)->update($data);
+            $res_msg = "Your record has been updated sucessfully";
+        }        
+        
+        $result = array();
+        if($listId){
+            $result['info']['msg'] = $res_msg;
+            return response()->json(['result'=>$result]);
+        }
+        return response()->json(['error'=>'Your record update failed!!'],401);
+    }
+
     
 
 

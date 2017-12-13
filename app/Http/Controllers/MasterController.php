@@ -40,6 +40,28 @@ class MasterController extends Controller
 
 
     }
+
+    public function getContactDetails(Request $request){
+        $token = $this->getToken($request);
+        $user = JWTAuth::toUser($token);
+        $input = $request->all();
+      
+        $lists = DB::table('m_contacts as mc')
+                    ->leftjoin('clients as c','c.id','=','mc.client_name')
+                    ->select('mc.first_name as name','mc.*')
+                    ->orderBy('mc.id','desc')
+                    ->get();       
+
+        $result = array();
+        if(count($lists) > 0){
+             $result["info"] = $lists;
+             return response()->json(["result" => $result]);   
+        }
+        return response()->json(['error'=>"No records found!"],401);
+
+
+   }
+
     
       public function getTerritory(Request $request){
         //  $token = $this->getToken($request);
