@@ -345,6 +345,118 @@ class ProjectController extends Controller
         return response()->json(['error'=>'Your record update failed!!'],401);
     }
 
+
+    public function getProjectScopeMasterDataById(Request $request , $id)
+    {   
+        $token = $this->getToken($request);
+    	$user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+        
+        $project_hdr = DB::table('c_project_hdr as ph')
+                            ->leftjoin('m_project_type as mpt','mpt.id','=','ph.project_type_id')
+                            ->select('mpt.name as project_type','ph.id')
+                            ->where('ph.project_id','=',1)
+                            ->get();
+        
+        $cart = array();  
+        $i=0;      
+        foreach ($project_hdr as $key => $value) {
+
+            $project_child = DB::table('c_project_child as pc')
+                            ->leftjoin('m_building_class as mbc','mbc.id','=','pc.building_class_id')
+                            ->select('mbc.name as building_class','pc.building_units')
+                            ->where('pc.c_project_hdr_id','=',$value->id)
+                            ->get();
+
+            foreach ($project_child as $k => $val) {
+                $i++;
+                $cart[$i]['project_type'] = $value->project_type;  
+                $cart[$i]['building_class'] = $val->building_class;  
+                $cart[$i]['building_units'] = $val->building_units;  
+            }
+        }   
+        
+        $lists = DB::table('m_project_scope')->get();        
+        $newArr = [];
+        
+        foreach ($cart as $key => $value) {            
+            foreach ($lists as $k => $val) {
+                 $kk = $key-1;
+                 $newArr[$kk]['project_type'] = $value['project_type'];
+                 $newArr[$kk]['building_class'] = $value['building_class'];
+                 $newArr[$kk]['building_units'] = $value['building_units'];
+                 $newArr[$kk][$val->db_name] = '';                 
+            }
+        }
+     
+
+        if(count($newArr)>0){
+            $result['info']['lists'] = $newArr;
+            return response()->json(['result'=>$result]);
+        }
+        return response()->json(['error'=>'Your listing has been coud not added!'],401);
+                            
+        
+    }
+
+    public function getProjectScopeById(Request $request , $id)
+    {   
+        $token = $this->getToken($request);
+    	$user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+        
+        $lists = DB::table('project_scope')->where('id','=',$id)->first();
+        
+        if(count($lists)>0){
+            $result['info']['lists'] = $lists;
+            return response()->json(['result'=>$result]);
+        }
+        return response()->json(['error'=>'Your listing has been coud not added!'],401);
+                            
+        
+    }
+
+    public function updateProjectScope(Request $request, $id)
+    {
+        $token = $this->getToken($request);
+    	$user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+    
+        $input_data = $input['info']['project_details'];
+        $data = $input_data;
+        
+        $check_data = DB::table('project_scope')->where('project_id','=',$id)->first();
+        if(empty($check_data)){
+            $res_msg = "Your record has been inserted sucessfully";
+        }else{
+            $res_msg = "Your record has been updated sucessfully";
+        }        
+
+        DB::table('project_scope')->where('project_id','=',$id)->delete();
+        foreach ($data as $key => $value) {
+            $value['project_id'] = $id;            
+            $listId = DB::table('project_scope')->insertGetId($value);
+        }
+
+        $result = array();
+        if($listId){
+            $result['info']['msg'] = $res_msg;
+            return response()->json(['result'=>$result]);
+        }
+        return response()->json(['error'=>'Your record update failed!!'],401);
+    }
     
 
 

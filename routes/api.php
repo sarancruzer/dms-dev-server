@@ -107,6 +107,11 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('getProjectTeamById/{id}', 'ProjectController@getProjectTeamById');
 	Route::post('updateProjectTeam/{id}', 'ProjectController@updateProjectTeam');		
 
+	Route::post('getProjectScopeMasterDataById/{id}', 'ProjectController@getProjectScopeMasterDataById');
+	Route::post('getProjectScopeById/{id}', 'ProjectController@getProjectScopeById');
+	Route::post('updateProjectScope/{id}', 'ProjectController@updateProjectScope');		
+	
+
 	//get all Masters
 	Route::post('getMasters', 'MasterController@getMasterDetails');		
 	Route::post('getContacts', 'MasterController@getContactDetails');		
