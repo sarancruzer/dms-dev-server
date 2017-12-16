@@ -346,11 +346,11 @@ class ProjectController extends Controller
     }
 
 
-    public function getProjectScopeMasterDataById(Request $request , $id)
+    public function getProjectScopeMasterDataById($id)
     {   
-        $token = $this->getToken($request);
-    	$user = JWTAuth::toUser($token);
-        $input = $request->all();
+        // $token = $this->getToken($request);
+    	// $user = JWTAuth::toUser($token);
+        // $input = $request->all();
 
         if($id == null){
             return response()->json(['error'=>'invalid entry!'],401);    
@@ -393,12 +393,12 @@ class ProjectController extends Controller
             }
         }
      
-
-        if(count($newArr)>0){
-            $result['info']['lists'] = $newArr;
-            return response()->json(['result'=>$result]);
-        }
-        return response()->json(['error'=>'Your listing has been coud not added!'],401);
+        return $newArr;
+        // if(count($newArr)>0){
+        //     $result['info']['lists'] = $newArr;
+        //     return response()->json(['result'=>$result]);
+        // }
+        // return response()->json(['error'=>'Your listing has been coud not added!'],401);
                             
         
     }
@@ -413,11 +413,21 @@ class ProjectController extends Controller
             return response()->json(['error'=>'invalid entry!'],401);    
         }
         
-        $lists = DB::table('project_scope')->where('id','=',$id)->first();
+        $lists = DB::table('project_scope')
+                     ->select('project_type','building_class','building_units','aluminium_windows','aluminium_doors','curtain_wall','aluminium_louvres','kitchens','kitchenettes','bedrooms','laundries','bathrooms','ensuites','balconies','storage','study','garages','other')
+                    ->where('project_id','=',$id)->get();
         
         if(count($lists)>0){
+            //echo "ALREADY  EXISTS";
             $result['info']['lists'] = $lists;
             return response()->json(['result'=>$result]);
+        }else{
+            //echo "NOT EXISTS";
+           $res =  $this->getProjectScopeMasterDataById($id);
+           $result['info']['lists'] = $res;
+           $result['info']['quote'] = "5000";
+
+           return response()->json(['result'=>$result]);
         }
         return response()->json(['error'=>'Your listing has been coud not added!'],401);
                             
@@ -435,6 +445,7 @@ class ProjectController extends Controller
         }
     
         $input_data = $input['info']['project_details'];
+        $quote = $input['info']['quote'];
         $data = $input_data;
         
         $check_data = DB::table('project_scope')->where('project_id','=',$id)->first();
@@ -450,12 +461,14 @@ class ProjectController extends Controller
             $listId = DB::table('project_scope')->insertGetId($value);
         }
 
-        $result = array();
-        if($listId){
-            $result['info']['msg'] = $res_msg;
-            return response()->json(['result'=>$result]);
-        }
-        return response()->json(['error'=>'Your record update failed!!'],401);
+        $check_data = DB::table('project_scope_quote')->where('quote','=',$quote)->update();
+        
+         $result = array();
+         if($listId){
+             $result['info']['msg'] = $res_msg;
+             return response()->json(['result'=>$result]);
+         }
+         return response()->json(['error'=>'Your record update failed!!'],401);
     }
     
 
