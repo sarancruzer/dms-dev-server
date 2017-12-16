@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 15, 2017 at 08:06 PM
+-- Generation Time: Dec 16, 2017 at 02:34 PM
 -- Server version: 5.7.20-0ubuntu0.16.04.1
 -- PHP Version: 5.6.32-1+ubuntu16.04.1+deb.sury.org+2
 
@@ -658,11 +658,26 @@ CREATE TABLE `project_scope` (
 --
 
 INSERT INTO `project_scope` (`id`, `project_id`, `project_type`, `building_class`, `building_units`, `aluminium_windows`, `aluminium_doors`, `curtain_wall`, `aluminium_louvres`, `kitchens`, `kitchenettes`, `bedrooms`, `laundries`, `bathrooms`, `ensuites`, `balconies`, `storage`, `study`, `garages`, `other`, `created_at`, `updated_at`, `status`, `is_deleted`) VALUES
-(11, 1, 'project type1', 'buildingclass1', 'project type1', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '2017-12-15 19:50:49', '2017-12-15 19:50:49', 1, 0),
-(12, 1, 'project type1', 'asdasd', 'project type1', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '2017-12-15 19:50:49', '2017-12-15 19:50:49', 1, 0),
-(13, 1, 'project type2', 'buildingclass1', 'project type2', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '2017-12-15 19:50:49', '2017-12-15 19:50:49', 1, 0),
-(14, 1, 'project type2', 'asdasd', 'project type2', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '2017-12-15 19:50:49', '2017-12-15 19:50:49', 1, 0),
-(15, 1, 'project type2', 'buildingclass1', 'project type2', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '2017-12-15 19:50:49', '2017-12-15 19:50:49', 1, 0);
+(21, 1, 'project type1', 'buildingclass1', 'project type1', '', '', '', '', '', '', '', '', '', '', '', '234', '', '', '6', '2017-12-16 14:12:23', '2017-12-16 14:12:23', 1, 0),
+(22, 1, 'project type1', 'asdasd', 'project type1', '', '', '', '', '', '', '', '', '', '', '', '234', '', '', '5', '2017-12-16 14:12:23', '2017-12-16 14:12:23', 1, 0),
+(23, 1, 'project type2', 'buildingclass1', 'project type2', '', '', '', '', '', '', '', '', '', '', '', '234', '', '', '4', '2017-12-16 14:12:23', '2017-12-16 14:12:23', 1, 0),
+(24, 1, 'project type2', 'asdasd', 'project type2', '', '', '', '', '', '', '', '', '', '', '', '234', '', '', '3', '2017-12-16 14:12:23', '2017-12-16 14:12:23', 1, 0),
+(25, 1, 'project type2', 'buildingclass1', 'project type2', '', '', '', '', '', '', '', '', '', '', '', '234', '', '', '', '2017-12-16 14:12:23', '2017-12-16 14:12:23', 1, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `project_scope_quote`
+--
+
+CREATE TABLE `project_scope_quote` (
+  `id` int(11) NOT NULL,
+  `pscope_id` int(11) NOT NULL,
+  `quote` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -723,7 +738,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `mobile`, `avatar`, `role_id`, `password`, `remember_token`, `last_login`, `created_at`, `updated_at`, `status`) VALUES
 (1, 'Saravanan', 'Nandhan', 'sarancruzer@dms.dev', '9597009544', NULL, 1, '$2y$10$qrH07lsBHNLs2uqPTWODcud.YAADJbRQUZK.UBwSqOfOWzd.5OLZq', NULL, '2017-12-04 10:30:34', '2017-10-10 06:56:39', '2017-12-04 10:30:34', 1),
 (2, 'Suresh', 'Varan', 'suresh@dms.dev', '9895949134', NULL, 1, '$2y$10$5bqyMsE21wzeOIyhAypSsuvu4vKgjaIEHlmbTooRisLqDErVsLDuC', NULL, '2017-12-05 00:26:48', '2017-10-10 06:56:39', '2017-12-05 00:26:48', 1),
-(3, 'David', 'David', 'david@dms.dev', '', NULL, 1, '$2y$10$qrH07lsBHNLs2uqPTWODcud.YAADJbRQUZK.UBwSqOfOWzd.5OLZq', NULL, '2017-12-15 13:33:18', '2017-10-10 06:56:40', '2017-12-15 08:03:18', 1),
+(3, 'David', 'David', 'david@dms.dev', '', NULL, 1, '$2y$10$qrH07lsBHNLs2uqPTWODcud.YAADJbRQUZK.UBwSqOfOWzd.5OLZq', NULL, '2017-12-16 08:39:29', '2017-10-10 06:56:40', '2017-12-16 03:09:29', 1),
 (4, 'Chris', 'Sevilleja', 'chris@scotch.io', '', NULL, 1, '$2y$10$o2FSLbo13cW2lA4N.9UpOuR9sbJECFGfzolAuVd6W7NWaAl4Vv9QS', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
 (5, 'Holly', 'Lloyd', 'holly@scotch.io', '', NULL, NULL, '$2y$10$9.UilQnDBoN7LhUizQtTI.OHPLsfOB3Hv/tN.1qvfu3HD2/2rbjnK', NULL, NULL, '2017-10-10 06:56:40', '2017-10-10 06:56:40', 1),
 (8, 'saravana', 'veg3', 'sarancruzerr@gmail.com', '9597009544', NULL, 1, '$2y$10$9GyykrUVC2Nte4DivSHcZeUAkQQPNDbxrplJmoc.dFPKZeXhDysHa', NULL, NULL, NULL, NULL, 1),
@@ -876,6 +891,12 @@ ALTER TABLE `project_scope`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `project_scope_quote`
+--
+ALTER TABLE `project_scope_quote`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `project_team`
 --
 ALTER TABLE `project_team`
@@ -1001,7 +1022,12 @@ ALTER TABLE `project`
 -- AUTO_INCREMENT for table `project_scope`
 --
 ALTER TABLE `project_scope`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+--
+-- AUTO_INCREMENT for table `project_scope_quote`
+--
+ALTER TABLE `project_scope_quote`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `project_team`
 --
