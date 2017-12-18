@@ -66,6 +66,18 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('addBuildingClass', 'BuildingClassController@create');
 	Route::post('updateBuildingClass/{id}', 'BuildingClassController@update');		
 	Route::post('deleteBuildingClass/{id}', 'BuildingClassController@destroy');
+
+	//Master modules
+	Route::post('getItems', 'ItemsController@index');
+	Route::post('addItems', 'ItemsController@create');
+	Route::post('updateItems/{id}', 'ItemsController@update');		
+	Route::post('deleteItems/{id}', 'ItemsController@destroy');
+
+	//Master modules
+	Route::post('getProjectScope', 'ProjectScopeController@index');
+	Route::post('addProjectScope', 'ProjectScopeController@create');
+	Route::post('updateProjectScope/{id}', 'ProjectScopeController@update');		
+	Route::post('deleteProjectScope/{id}', 'ProjectScopeController@destroy');
 	
 
 	// Route::post('getTerritory', 'TerritoryController@index');
@@ -108,8 +120,10 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('updateProjectTeam/{id}', 'ProjectController@updateProjectTeam');		
 
 	Route::post('getProjectScopeMasterDataById/{id}', 'ProjectController@getProjectScopeMasterDataById');
-	Route::post('getProjectScopeById/{id}', 'ProjectController@getProjectScopeById');
-	Route::post('updateProjectScope/{id}', 'ProjectController@updateProjectScope');		
+	Route::post('getProjectScopeDetailById/{id}', 'ProjectController@getProjectScopeDetailById');
+	Route::post('updateProjectScopeDetail/{id}', 'ProjectController@updateProjectScopeDetail');		
+	
+	Route::post('getProjectScopeMaster', 'ProjectController@getProjectScopeMaster');
 	
 
 	//get all Masters

@@ -358,8 +358,8 @@ class ProjectController extends Controller
         
         $project_hdr = DB::table('c_project_hdr as ph')
                             ->leftjoin('m_project_type as mpt','mpt.id','=','ph.project_type_id')
-                            ->select('mpt.name as project_type','ph.id')
-                            ->where('ph.project_id','=',1)
+                            ->select('mpt.name as project_type','ph.id','ph.project_type_id')
+                            ->where('ph.project_id','=',$id)
                             ->get();
         
         $cart = array();  
@@ -368,7 +368,7 @@ class ProjectController extends Controller
 
             $project_child = DB::table('c_project_child as pc')
                             ->leftjoin('m_building_class as mbc','mbc.id','=','pc.building_class_id')
-                            ->select('mbc.name as building_class','pc.building_units')
+                            ->select('mbc.name as building_class','pc.building_units','pc.building_class_id')
                             ->where('pc.c_project_hdr_id','=',$value->id)
                             ->get();
 
@@ -377,10 +377,12 @@ class ProjectController extends Controller
                 $cart[$i]['project_type'] = $value->project_type;  
                 $cart[$i]['building_class'] = $val->building_class;  
                 $cart[$i]['building_units'] = $val->building_units;  
+                $cart[$i]['project_type_id'] = $value->project_type_id;  
+                $cart[$i]['building_class_id'] = $val->building_class_id;
             }
         }   
         
-        $lists = DB::table('m_project_scope')->get();        
+        $lists = DB::table('m_items')->get();        
         $newArr = [];
         
         foreach ($cart as $key => $value) {            
@@ -389,7 +391,18 @@ class ProjectController extends Controller
                  $newArr[$kk]['project_type'] = $value['project_type'];
                  $newArr[$kk]['building_class'] = $value['building_class'];
                  $newArr[$kk]['building_units'] = $value['building_units'];
-                 $newArr[$kk][$val->db_name] = '';                 
+                 $newArr[$kk]['project_type_id'] = $value['project_type_id'];
+                 $newArr[$kk]['building_class_id'] = $value['building_class_id'];
+                 $newArr[$kk][$val->db_name] = '';
+                 $newArr[$kk]['project_id'] = $id;
+                 
+                 $priceLists = DB::table('m_project_scope')
+                            ->where('building_class_id','=',$value['building_class_id'])
+                            ->where('items_id','=',$val->id)
+                            ->first();
+                 $newArr[$kk][$val->db_name."_price"] = $priceLists->price;   
+                 //$newArr[$kk]['items'][$k]['item'] = $val->db_name;
+                 //$newArr[$kk]['items'][$k]['price'] = $priceLists->price;                 
             }
         }
      
@@ -403,7 +416,7 @@ class ProjectController extends Controller
         
     }
 
-    public function getProjectScopeById(Request $request , $id)
+    public function getProjectScopeDetailById(Request $request , $id)
     {   
         $token = $this->getToken($request);
     	$user = JWTAuth::toUser($token);
@@ -414,18 +427,23 @@ class ProjectController extends Controller
         }
         
         $lists = DB::table('project_scope')
-                     ->select('project_type','building_class','building_units','aluminium_windows','aluminium_doors','curtain_wall','aluminium_louvres','kitchens','kitchenettes','bedrooms','laundries','bathrooms','ensuites','balconies','storage','study','garages','other')
+                     ->select('project_id','building_class_id','project_type_id','project_type','building_class','building_units','aluminium_windows','aluminium_doors','curtain_wall','aluminium_louvres','kitchens','kitchenettes','bedrooms','laundries','bathrooms','ensuites','balconies','storage','study','garages','other','aluminium_windows_price','aluminium_doors_price','curtain_wall_price','aluminium_louvres_price','kitchens_price','kitchenettes_price','bedrooms_price','laundries_price','bathrooms_price','ensuites_price','balconies_price','storage_price','study_price','garages_price','other_price')
+                     //->select('*')
                     ->where('project_id','=',$id)->get();
+       
         
+        $project_quote_data = DB::table('project_scope_quote')->where('project_id','=',$id)->first();            
+
         if(count($lists)>0){
             //echo "ALREADY  EXISTS";
             $result['info']['lists'] = $lists;
+            $result['info']['quote'] = $project_quote_data->quote;
             return response()->json(['result'=>$result]);
         }else{
             //echo "NOT EXISTS";
            $res =  $this->getProjectScopeMasterDataById($id);
            $result['info']['lists'] = $res;
-           $result['info']['quote'] = "5000";
+           $result['info']['quote'] = "";
 
            return response()->json(['result'=>$result]);
         }
@@ -434,34 +452,45 @@ class ProjectController extends Controller
         
     }
 
-    public function updateProjectScope(Request $request, $id)
+    public function updateProjectScopeDetail(Request $request, $id)
     {
         $token = $this->getToken($request);
     	$user = JWTAuth::toUser($token);
         $input = $request->all();
 
+        
         if($id == null){
             return response()->json(['error'=>'invalid entry!'],401);    
         }
     
         $input_data = $input['info']['project_details'];
-        $quote = $input['info']['quote'];
         $data = $input_data;
         
-        $check_data = DB::table('project_scope')->where('project_id','=',$id)->first();
-        if(empty($check_data)){
-            $res_msg = "Your record has been inserted sucessfully";
-        }else{
-            $res_msg = "Your record has been updated sucessfully";
-        }        
 
         DB::table('project_scope')->where('project_id','=',$id)->delete();
         foreach ($data as $key => $value) {
-            $value['project_id'] = $id;            
+            $value['project_id'] = $id;  
+            
             $listId = DB::table('project_scope')->insertGetId($value);
         }
 
-        $check_data = DB::table('project_scope_quote')->where('quote','=',$quote)->update();
+
+        $check_data = DB::table('project_scope_quote')->where('project_id','=',$id)->get();
+        
+        if(empty($check_data)){
+            // echo "not exists";
+            $res_msg = "Your record has been inserted sucessfully";
+            $quote_data['project_id'] = $id;
+            $quote_data['quote'] = $input['info']['quote'];        
+            $check_data = DB::table('project_scope_quote')->insertGetId($quote_data);    
+                                
+        }else{
+            // echo "already exists";
+            $res_msg = "Your record has been updated sucessfully";
+            $quote_data['quote'] = $input['info']['quote'];              
+            $check_data = DB::table('project_scope_quote')->where('project_id','=',$id)->update($quote_data);
+        }     
+        
         
          $result = array();
          if($listId){
@@ -470,6 +499,29 @@ class ProjectController extends Controller
          }
          return response()->json(['error'=>'Your record update failed!!'],401);
     }
+
+       
+    public function getProjectScopeMaster(Request $request){
+        $token = $this->getToken($request);
+        $user = JWTAuth::toUser($token);
+        $input = $request->all();
+      
+        $lists = DB::table('m_project_scope as ps')
+                    ->leftjoin('m_building_class as bc','bc.id','=','ps.building_class_id')
+                    ->leftjoin('m_items as i','i.id','=','ps.items_id')
+                    ->select('ps.*','bc.name as building_class',DB::raw('LOWER(i.name) as item_name'))
+                    ->orderBy('ps.id','desc')
+                    ->get();       
+
+        $result = array();
+        if(count($lists) > 0){
+             $result["info"] = $lists;
+             return response()->json(["result" => $result]);   
+        }
+        return response()->json(['error'=>"No records found!"],401);
+
+
+   }
     
 
 
