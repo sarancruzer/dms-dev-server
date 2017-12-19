@@ -245,6 +245,10 @@ class ProjectController extends Controller
             $result['info']['lists'] = $project_types;
             $result['info']['project_name'] = $projectLists->project_name;
             return response()->json(['result'=>$result]);
+        }else{
+            $result['info']['project_name'] = $projectLists->project_name;
+            $result['error']= 'No results found!';
+            return response()->json(['error'=>$result],401);
         }
         return response()->json(['error'=>'No results found!'],401);
                             
@@ -312,6 +316,9 @@ class ProjectController extends Controller
         $res_msg = "Your record has been updated sucessfully";
         $result = array();
         if($hdrId){
+
+            DB::table('project')->where('id',$id)->update(['is_configured'=>1]);                    
+
             $result['info']['msg'] = $res_msg;
             return response()->json(['result'=>$result]);
         }

@@ -132,6 +132,9 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('editProjectDocs/{id}', 'ProjectDocsController@edit');
 	Route::post('updateProjectDocs/{id}', 'ProjectDocsController@update');		
 	Route::post('deleteProjectDocs/{id}', 'ProjectDocsController@destroy');	
+	Route::post('getProjectsDocsReferenceId/{id}', 'ProjectDocsController@getProjectsDocsReferenceId');	
+
+	
 
 	Route::post('getAdditionalInfoById/{id}', 'ProjectNoteController@getAdditionalInfoById');
 	Route::post('updateAdditionalInfoById/{id}', 'ProjectNoteController@updateAdditionalInfoById');
@@ -143,6 +146,7 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	//get all Masters
 	Route::post('getMasters', 'MasterController@getMasterDetails');		
 	Route::post('getContacts', 'MasterController@getContactDetails');		
+	Route::post('getProjects', 'MasterController@getProjectDetails');		
 
 });
 

@@ -35,9 +35,11 @@ class ProjectDocsController extends Controller
 
        $project_id = $input['project_id'];
 
-       $lists = DB::table('project_docs')
-               ->orderBy($input['column'],$input['orderby'])
-               ->where('project_id','=',$project_id)
+       $lists = DB::table('project_docs as pd')
+                ->leftjoin('project as p','p.id','=','pd.project_id')
+                ->select('pd.*','p.project_name')
+               ->orderBy('pd.'.$input['column'],$input['orderby'])
+               ->where('pd.project_id','=',$project_id)
                ->paginate(5);        
       
        $result = array();
@@ -54,8 +56,7 @@ class ProjectDocsController extends Controller
     * @return \Illuminate\Http\Response
     */
    public function create(Request $request)
-   {
-       //
+   {       //
        $token = $this->getToken($request);
        $user = JWTAuth::toUser($token);
        $input = $request->all();
@@ -65,10 +66,10 @@ class ProjectDocsController extends Controller
            return response()->json(['error'=>"Invalid Entry"],401);
        }
 
-       $input_data = $input['info'];
+       $input_data = $input['info']; 
+       unset($input_data['ref']);      
        
-       
-       $listId = DB::table('m_client_type')->insertGetId($data);
+       $listId = DB::table('project_docs')->insertGetId($input_data);
        $res_msg = "Your record has been inserted sucessfully";
        
        $result = array();
@@ -114,14 +115,18 @@ class ProjectDocsController extends Controller
        $user = JWTAuth::toUser($token);
        $input = $request->all();
 
+       $project_id = $input['project_id'];
+
        if($id == null){
            return response()->json(['error'=>'invalid entry!'],401);    
        }
        
        $lists = DB::table('project_docs')->where('id','=',$id)->first();
+       $projectLists = DB::table('project')->where('id','=',$project_id)->first();
        
        if(count($lists)>0){
            $result['info']['lists'] = $lists;
+           $result['info']['project_name'] = $projectLists->project_name;
            return response()->json(['result'=>$result]);
        }
        return response()->json(['error'=>'Your listing has been coud not added!'],401);
@@ -185,6 +190,32 @@ class ProjectDocsController extends Controller
        
    }
 
+   public function getProjectsDocsReferenceId(Request $request,$id)
+   {
+       //
+       $token = $this->getToken($request);
+       $user = JWTAuth::toUser($token);
+       $input = $request->all();
+
+       if($id == null){
+           return response()->json(['error'=>'invalid entry!'],401);    
+       }
+       
+       $lists = DB::table('project_docs')->orderby('id', 'desc')->first();
+       $referenceId = $lists->id + 1;
+       $archId = "A -".(int)($lists->id + 100);
+       $projectLists = DB::table('project')->where('id','=',$id)->first();
+
+       if(count($lists)>0){
+           $result['info']['reference_id'] = $referenceId;
+           $result['info']['arch_id'] = $archId;
+           $result['info']['project_name'] = $projectLists->project_name;
+           
+           return response()->json(['result'=>$result]);
+       }
+       return response()->json(['error'=>'Your listing has been coud not added!'],401);
+   }
+   
 
    
 }
