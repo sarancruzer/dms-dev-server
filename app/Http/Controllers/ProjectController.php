@@ -237,14 +237,41 @@ class ProjectController extends Controller
             ->get();
 
         $project_types[$key]->building_class = $building_class;
-        }                        
+        }                 
+        
+        $projectLists = DB::table('project')->where('id','=',$id)->first();
         
         if(count($project_types)>0){
             $result['info']['lists'] = $project_types;
+            $result['info']['project_name'] = $projectLists->project_name;
             return response()->json(['result'=>$result]);
         }
         return response()->json(['error'=>'No results found!'],401);
                             
+        
+    }
+
+    public function getIsConfigureProjectById(Request $request , $id)
+    {   
+        $token = $this->getToken($request);
+    	$user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+
+        $projectConfiguredLists = DB::table('c_project_hdr')
+                    ->where('project_id','=',$id)
+                    ->get();
+
+        if(count($projectConfiguredLists)>0){
+            $result['info']['flag'] = true;
+            return response()->json(['result'=>$result]);
+        }
+        $result['info']['flag'] = false;
+        $result['error'] = "Without configure project you can't access project scope!";
+        return response()->json(['error'=>$result],401);
         
     }
 
@@ -303,13 +330,21 @@ class ProjectController extends Controller
             return response()->json(['error'=>'invalid entry!'],401);    
         }
         
-        $lists = DB::table('project_team')->where('id','=',$id)->first();
-        
+        $lists = DB::table('project_team')->where('project_id','=',$id)->first();
+        $projectLists = DB::table('project')->where('id','=',$id)->first();
+
+        //print_r($lists);
+
         if(count($lists)>0){
             $result['info']['lists'] = $lists;
+            $result['info']['project_name'] = $projectLists->project_name;
             return response()->json(['result'=>$result]);
         }
-        return response()->json(['error'=>'Your listing has been coud not added!'],401);
+        
+        $result['project_name'] = $projectLists->project_name;
+        $result['error'] = 'Your listing has been coud not added!';
+        return response()->json(['result'=>$result],401);
+        
                             
         
     }
@@ -333,7 +368,7 @@ class ProjectController extends Controller
             $listId = DB::table('project_team')->insertGetId($data);
             $res_msg = "Your record has been inserted sucessfully";
         }else{
-            $listId = DB::table('project_team')->where('id','=',$id)->update($data);
+            $listId = DB::table('project_team')->where('project_id','=',$id)->update($data);
             $res_msg = "Your record has been updated sucessfully";
         }        
         
@@ -432,18 +467,22 @@ class ProjectController extends Controller
                     ->where('project_id','=',$id)->get();
        
         
-        $project_quote_data = DB::table('project_scope_quote')->where('project_id','=',$id)->first();            
+        $project_quote_data = DB::table('project_scope_quote')->where('project_id','=',$id)->first(); 
+        
+        $projectLists = DB::table('project')->where('id','=',$id)->first();
 
         if(count($lists)>0){
             //echo "ALREADY  EXISTS";
             $result['info']['lists'] = $lists;
             $result['info']['quote'] = $project_quote_data->quote;
+            $result['info']['project_name'] = $projectLists->project_name;
             return response()->json(['result'=>$result]);
         }else{
             //echo "NOT EXISTS";
            $res =  $this->getProjectScopeMasterDataById($id);
            $result['info']['lists'] = $res;
            $result['info']['quote'] = "";
+           $result['info']['project_name'] = $projectLists->project_name;
 
            return response()->json(['result'=>$result]);
         }
@@ -477,18 +516,21 @@ class ProjectController extends Controller
 
         $check_data = DB::table('project_scope_quote')->where('project_id','=',$id)->get();
         
-        if(empty($check_data)){
+       // print_r($check_data);
+        
+        if(count($check_data)>0){
+            // echo "already exists";
+            $res_msg = "Your record has been updated sucessfully";
+            $quote_data['quote'] = $input['info']['quote'];              
+            $check_data = DB::table('project_scope_quote')->where('project_id','=',$id)->update($quote_data);
+                                
+        }else{
             // echo "not exists";
             $res_msg = "Your record has been inserted sucessfully";
             $quote_data['project_id'] = $id;
             $quote_data['quote'] = $input['info']['quote'];        
             $check_data = DB::table('project_scope_quote')->insertGetId($quote_data);    
-                                
-        }else{
-            // echo "already exists";
-            $res_msg = "Your record has been updated sucessfully";
-            $quote_data['quote'] = $input['info']['quote'];              
-            $check_data = DB::table('project_scope_quote')->where('project_id','=',$id)->update($quote_data);
+            
         }     
         
         

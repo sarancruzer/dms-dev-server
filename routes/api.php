@@ -114,7 +114,8 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('deleteProject/{id}', 'ProjectController@destroy');	
 
 	Route::post('getConfigureProjectById/{id}', 'ProjectController@getConfigureProjectById');
-	Route::post('updateConfigureProject/{id}', 'ProjectController@updateConfigureProject');		
+	Route::post('updateConfigureProject/{id}', 'ProjectController@updateConfigureProject');	
+	Route::post('getIsConfigureProjectById/{id}', 'ProjectController@getIsConfigureProjectById');	
 
 	Route::post('getProjectTeamById/{id}', 'ProjectController@getProjectTeamById');
 	Route::post('updateProjectTeam/{id}', 'ProjectController@updateProjectTeam');		
@@ -124,7 +125,20 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('updateProjectScopeDetail/{id}', 'ProjectController@updateProjectScopeDetail');		
 	
 	Route::post('getProjectScopeMaster', 'ProjectController@getProjectScopeMaster');
+
 	
+	Route::post('getProjectDocs', 'ProjectDocsController@index');
+	Route::post('addProjectDocs', 'ProjectDocsController@create');
+	Route::post('editProjectDocs/{id}', 'ProjectDocsController@edit');
+	Route::post('updateProjectDocs/{id}', 'ProjectDocsController@update');		
+	Route::post('deleteProjectDocs/{id}', 'ProjectDocsController@destroy');	
+
+	Route::post('getAdditionalInfoById/{id}', 'ProjectNoteController@getAdditionalInfoById');
+	Route::post('updateAdditionalInfoById/{id}', 'ProjectNoteController@updateAdditionalInfoById');
+	Route::post('getProjectNoteById/{id}', 'ProjectNoteController@getProjectNoteById');
+	Route::post('updateProjectNoteById/{id}', 'ProjectNoteController@updateProjectNoteById');
+	
+		
 
 	//get all Masters
 	Route::post('getMasters', 'MasterController@getMasterDetails');		
