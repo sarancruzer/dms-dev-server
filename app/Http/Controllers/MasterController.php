@@ -63,8 +63,8 @@ class MasterController extends Controller
    }
 
    public function getProjectDetails(Request $request){
-    $token = $this->getToken($request);
-    $user = JWTAuth::toUser($token);
+    // $token = $this->getToken($request);
+    // $user = JWTAuth::toUser($token);
     $input = $request->all();
   
     $lists = DB::table('project as p')
