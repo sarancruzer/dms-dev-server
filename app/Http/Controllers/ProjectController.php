@@ -530,7 +530,7 @@ class ProjectController extends Controller
             $res_msg = "Your record has been updated sucessfully";
             $quote_data['quote'] = $input['info']['quote'];              
             $check_data = DB::table('project_scope_quote')->where('project_id','=',$id)->update($quote_data);
-                                
+                                            
         }else{
             // echo "not exists";
             $res_msg = "Your record has been inserted sucessfully";
@@ -538,18 +538,20 @@ class ProjectController extends Controller
             $quote_data['quote'] = $input['info']['quote'];        
             $check_data = DB::table('project_scope_quote')->insertGetId($quote_data);    
             
-        }     
-        
-        
+        }   
+
          $result = array();
          if($listId){
+
+             //$this->insertSupplyItems($input_data);   
+
              $result['info']['msg'] = $res_msg;
              return response()->json(['result'=>$result]);
          }
          return response()->json(['error'=>'Your record update failed!!'],401);
     }
 
-       
+    
     public function getProjectScopeMaster(Request $request){
         $token = $this->getToken($request);
         $user = JWTAuth::toUser($token);
@@ -572,6 +574,183 @@ class ProjectController extends Controller
 
    }
     
+
+   public function insertSupplyItems($data)
+   {
+    
+    foreach ($data as $key => $value) {
+        $value['project_id'] = $id;
+        $listId = DB::table('supply_items')->insertGetId($value);
+    }
+   }
+
+   public function updateSupplyItems(Request $request,$id)
+   {
+    $token = $this->getToken($request);
+    $user = JWTAuth::toUser($token);
+    $input = $request->all();
+
+    DB::table('supply_items')->where('project_id','=',$id)->delete();
+
+    foreach ($data as $key => $value) {
+        $value['project_id'] = $id;
+        $listId = DB::table('supply_items')->insertGetId($value);
+    }
+
+   }
+
+
+   public function getSupplyItemsById(Request $request , $id)
+   {   
+       $token = $this->getToken($request);
+       $user = JWTAuth::toUser($token);
+       $input = $request->all();
+
+       if($id == null){
+           return response()->json(['error'=>'invalid entry!'],401);    
+       }
+       
+    //    $lists = DB::table('supply_items_new as si')
+    //                 ->leftjoin('m_items as i','i.id','=','si.items_id')
+    //                 ->select('si.*','i.name','i.db_name')
+    //                 ->where('project_id','=',$id)->get();
+
+    $ps_lists = DB::table('project_scope as ps')
+                    ->where('project_id','=',$id)->get();
+
+    //print_r($ps_lists);
+    
+
+    $arr = [];
+    
+    $arr['aluminium_windows'] = 0;
+    $arr['aluminium_doors'] = 0;
+    $arr['curtain_wall'] = 0;
+    $arr['aluminium_louvres'] = 0;
+    $arr['kitchens'] = 0;
+    $arr['kitchenettes'] = 0;
+    $arr['bedrooms'] = 0;
+    $arr['laundries'] = 0;
+    $arr['bathrooms'] = 0;
+    $arr['ensuites'] = 0;
+    $arr['balconies'] = 0;
+    $arr['storage'] = 0;
+    $arr['study'] = 0;
+    $arr['garages'] = 0;
+    $arr['other'] = 0;
+  
+
+    foreach ($ps_lists as $key => $value) {
+       // print_r($value);
+       
+        if($arr['aluminium_windows'] == 0){
+            $arr['aluminium_windows'] = ["interest"=>($value->aluminium_windows >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>1]; 
+        }
+
+        if($arr['aluminium_doors'] == 0){
+            $arr['aluminium_doors'] = ["interest"=>($value->aluminium_doors >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['curtain_wall'] == 0){
+            $arr['curtain_wall'] = ["interest"=>($value->curtain_wall >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['aluminium_louvres'] == 0){
+            $arr['aluminium_louvres'] = ["interest"=>($value->aluminium_louvres >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['kitchens'] == 0){
+            $arr['kitchens'] = ["interest"=>($value->kitchens >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['kitchenettes'] == 0){
+            $arr['kitchenettes'] = ["interest"=>($value->kitchenettes >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['bedrooms'] == 0){
+            $arr['bedrooms'] = ["interest"=>($value->bedrooms >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['laundries'] == 0){
+            $arr['laundries'] = ["interest"=>($value->laundries >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['bathrooms'] == 0){
+            $arr['bathrooms'] = ["interest"=>($value->bathrooms >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['ensuites'] == 0){
+            $arr['ensuites'] = ["interest"=>($value->ensuites >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['balconies'] == 0){
+            $arr['balconies'] = ["interest"=>($value->balconies >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['storage'] == 0){
+            $arr['storage'] = ["interest"=>($value->storage >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['study'] == 0){
+            $arr['study'] = ["interest"=>($value->study >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['garages'] == 0){
+            $arr['garages'] = ["interest"=>($value->garages >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }
+
+        if($arr['other'] == 0){
+            $arr['other'] = ["interest"=>($value->other >= 1 ? 1 : 0),"estimated_date"=>"2017-12-25","quoted_date"=>"2017-12-25","status"=>2];
+        }       
+
+        // $arr['aluminium_windows'] = 1;
+        // $arr['aluminium_doors'] = 1; 
+        // $arr['curtain_wall'] = 1; 
+        // $arr['aluminium_louvres'] = 1; 
+        // $arr['kitchens'] = 1; 
+        // $arr['kitchenettes'] = 1; 
+        // $arr['bedrooms'] = 1; 
+        // $arr['laundries'] = 1; 
+        // $arr['bathrooms'] = 1; 
+        // $arr['ensuites'] = 1; 
+        // $arr['balconies'] = 1; 
+        // $arr['storage'] = 1; 
+        // $arr['study'] = 1; 
+        // $arr['garages'] = 1; 
+        // $arr['other'] = 1; 
+        
+    }
+
+    
+    //print_r($arr);
+
+    //  $select_str = "aluminium_windows,aluminium_doors,curtain_wall,aluminium_louvres,kitchens,kitchenettes,bedrooms,laundries,bathrooms,ensuites,balconies,storage,study,garages,other";
+
+    //  $lists = DB::table('supply_items_new')
+    //                  ->select(DB::raw($select_str))
+    //                  ->where('project_id','=',$id)->first();
+                        
+    
+    //    $lists = DB::table('supply_items_new as si')
+    //                 ->leftjoin('m_items as i','i.id','=','si.items_id')
+    //                 ->select('si.*','i.name','i.db_name')
+    //                 ->where('project_id','=',$id)->get();
+
+       //print_r($lists);
+
+       if(count($arr)>0){
+           $result['info']['lists'] = [$arr];
+           return response()->json(['result'=>$result]);
+       }
+       
+       $result['error'] = 'Your listing has been coud not added!';
+       return response()->json(['result'=>$result],401);
+       
+                           
+       
+   }
+
+   
 
 
 }

@@ -126,7 +126,8 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	
 	Route::post('getProjectScopeMaster', 'ProjectController@getProjectScopeMaster');
 
-	
+	Route::post('getSupplyItemsById/{id}', 'ProjectController@getSupplyItemsById');
+
 	Route::post('getProjectDocs', 'ProjectDocsController@index');
 	Route::post('addProjectDocs', 'ProjectDocsController@create');
 	Route::post('editProjectDocs/{id}', 'ProjectDocsController@edit');
@@ -135,7 +136,6 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('getProjectsDocsReferenceId/{id}', 'ProjectDocsController@getProjectsDocsReferenceId');	
 
 	
-
 	Route::post('getAdditionalInfoById/{id}', 'ProjectNoteController@getAdditionalInfoById');
 	Route::post('updateAdditionalInfoById/{id}', 'ProjectNoteController@updateAdditionalInfoById');
 	Route::post('getProjectNoteById/{id}', 'ProjectNoteController@getProjectNoteById');
