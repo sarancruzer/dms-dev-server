@@ -593,13 +593,33 @@ class ProjectController extends Controller
        if($id == null){
            return response()->json(['error'=>'invalid entry!'],401);    
        }
-       
-    //    $lists = DB::table('supply_items_new as si')
-    //                 ->leftjoin('m_items as i','i.id','=','si.items_id')
-    //                 ->select('si.*','i.name','i.db_name')
-    //                 ->where('project_id','=',$id)->get();
+           
+        $lists = DB::table('supply_items as si')
+                ->where('project_id','=',$id)->get();
 
-    $ps_lists = DB::table('project_scope as ps')
+     $projectLists = DB::table('project')->where('id','=',$id)->first();
+     $result['info']['project_name'] = $projectLists->project_name; 
+     if(count($lists)>0){
+         //print("EXISTING ");
+           $arr = $this->getExistingSupplyItems($id);
+           $result['info']['lists'] = [$arr];
+           return response()->json(['result'=>$result]);
+       }else{
+        //print("NEW ");
+            $arr = $this->getNewSupplyItems($id);
+            $result['info']['lists'] = [$arr];
+            return response()->json(['result'=>$result]);
+       }
+       
+        $result['error'] = 'Your listing has been coud not added!';
+        return response()->json(['result'=>$result],401);
+       
+   }
+
+
+   public function getNewSupplyItems($id){
+
+     $ps_lists = DB::table('project_scope as ps')
                     ->where('project_id','=',$id)->get();
 
     //print_r($ps_lists);
@@ -607,6 +627,7 @@ class ProjectController extends Controller
 
     $arr = [];
     
+    $arr['all_joinery'] = 0;
     $arr['aluminium_windows'] = 0;
     $arr['aluminium_doors'] = 0;
     $arr['curtain_wall'] = 0;
@@ -622,224 +643,120 @@ class ProjectController extends Controller
     $arr['study'] = 0;
     $arr['garages'] = 0;
     $arr['other'] = 0;
+
   
 
     foreach ($ps_lists as $key => $value) {
        // print_r($value);
        
+        if($arr['all_joinery'] == 0){
+            $arr['all_joinery'] = ["greyout"=>($value->other >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        }
+
         if($arr['aluminium_windows'] == 0){
-            $arr['aluminium_windows'] = ["interest"=>($value->aluminium_windows >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>1]; 
+            $arr['aluminium_windows'] = ["greyout"=>($value->aluminium_windows >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1]; 
         }
 
         if($arr['aluminium_doors'] == 0){
-            $arr['aluminium_doors'] = ["interest"=>($value->aluminium_doors >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['aluminium_doors'] = ["greyout"=>($value->aluminium_doors >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['curtain_wall'] == 0){
-            $arr['curtain_wall'] = ["interest"=>($value->curtain_wall >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['curtain_wall'] = ["greyout"=>($value->curtain_wall >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['aluminium_louvres'] == 0){
-            $arr['aluminium_louvres'] = ["interest"=>($value->aluminium_louvres >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['aluminium_louvres'] = ["greyout"=>($value->aluminium_louvres >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['kitchens'] == 0){
-            $arr['kitchens'] = ["interest"=>($value->kitchens >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['kitchens'] = ["greyout"=>($value->kitchens >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['kitchenettes'] == 0){
-            $arr['kitchenettes'] = ["interest"=>($value->kitchenettes >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['kitchenettes'] = ["greyout"=>($value->kitchenettes >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['bedrooms'] == 0){
-            $arr['bedrooms'] = ["interest"=>($value->bedrooms >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['bedrooms'] = ["greyout"=>($value->bedrooms >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['laundries'] == 0){
-            $arr['laundries'] = ["interest"=>($value->laundries >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['laundries'] = ["greyout"=>($value->laundries >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['bathrooms'] == 0){
-            $arr['bathrooms'] = ["interest"=>($value->bathrooms >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['bathrooms'] = ["greyout"=>($value->bathrooms >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['ensuites'] == 0){
-            $arr['ensuites'] = ["interest"=>($value->ensuites >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['ensuites'] = ["greyout"=>($value->ensuites >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['balconies'] == 0){
-            $arr['balconies'] = ["interest"=>($value->balconies >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['balconies'] = ["greyout"=>($value->balconies >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['storage'] == 0){
-            $arr['storage'] = ["interest"=>($value->storage >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['storage'] = ["greyout"=>($value->storage >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['study'] == 0){
-            $arr['study'] = ["interest"=>($value->study >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['study'] = ["greyout"=>($value->study >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['garages'] == 0){
-            $arr['garages'] = ["interest"=>($value->garages >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
+            $arr['garages'] = ["greyout"=>($value->garages >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
         if($arr['other'] == 0){
-            $arr['other'] = ["interest"=>($value->other >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }       
-
-        // $arr['aluminium_windows'] = 1;
-        // $arr['aluminium_doors'] = 1; 
-        // $arr['curtain_wall'] = 1; 
-        // $arr['aluminium_louvres'] = 1; 
-        // $arr['kitchens'] = 1; 
-        // $arr['kitchenettes'] = 1; 
-        // $arr['bedrooms'] = 1; 
-        // $arr['laundries'] = 1; 
-        // $arr['bathrooms'] = 1; 
-        // $arr['ensuites'] = 1; 
-        // $arr['balconies'] = 1; 
-        // $arr['storage'] = 1; 
-        // $arr['study'] = 1; 
-        // $arr['garages'] = 1; 
-        // $arr['other'] = 1; 
-        
+            $arr['other'] = ["greyout"=>($value->other >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        }
     }
 
-        $this->getSupplyItems($id);
-
-        if(count($arr)>0){
-           $result['info']['lists'] = [$arr];
-           return response()->json(['result'=>$result]);
-       }
-       
-       $result['error'] = 'Your listing has been coud not added!';
-       return response()->json(['result'=>$result],401);
-       
+    return $arr;
+    
    }
 
 
-   public function getSupplyItems($id)
+   public function getExistingSupplyItems($id)
    {   
      
-       
-    $lists = DB::table('supply_items_new as si')
+    $lists = DB::table('supply_items as si')
                      ->leftjoin('m_items as i','i.id','=','si.items_id')
                      ->select('si.*','i.name','i.db_name')
                      ->where('project_id','=',$id)->get();
 
-    print_r($lists);
-
-
-    $ps_lists = DB::table('project_scope as ps')
-                    ->where('project_id','=',$id)->get();
-
-   //print_r($ps_lists);
+    //print_r($lists);
     
-
-    $arr = [];
-    
-    $arr['aluminium_windows'] = 0;
-    $arr['aluminium_doors'] = 0;
-    $arr['curtain_wall'] = 0;
-    $arr['aluminium_louvres'] = 0;
-    $arr['kitchens'] = 0;
-    $arr['kitchenettes'] = 0;
-    $arr['bedrooms'] = 0;
-    $arr['laundries'] = 0;
-    $arr['bathrooms'] = 0;
-    $arr['ensuites'] = 0;
-    $arr['balconies'] = 0;
-    $arr['storage'] = 0;
-    $arr['study'] = 0;
-    $arr['garages'] = 0;
-    $arr['other'] = 0;
-
-
-
-
+    $ar = [];
     foreach ($lists as $key => $value) {
-        
 
-
-
-    }
-  
-
-
-    foreach ($ps_lists as $key => $value) {
-       // print_r($value);
-       
-        if($arr['aluminium_windows'] == 0){
-            $arr['aluminium_windows'] = ["interest"=>($value->aluminium_windows >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>1]; 
+        if($value->quoted_date != ''){
+            $quoted_date = date("d-m-Y", strtotime($value->quoted_date));
+        }else{
+            $quoted_date = '';
+        }
+        if($value->estimated_date != ''){
+            $estimated_date = date("d-m-Y", strtotime($value->estimated_date));
+        }else{
+            $estimated_date = '';
         }
 
-        if($arr['aluminium_doors'] == 0){
-            $arr['aluminium_doors'] = ["interest"=>($value->aluminium_doors >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
+     //  $quoted_date = date("d-m-Y", strtotime($value->quoted_date));
+       // $estimated_date = date("d-m-Y", strtotime($value->estimated_date));
 
-        if($arr['curtain_wall'] == 0){
-            $arr['curtain_wall'] = ["interest"=>($value->curtain_wall >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['aluminium_louvres'] == 0){
-            $arr['aluminium_louvres'] = ["interest"=>($value->aluminium_louvres >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['kitchens'] == 0){
-            $arr['kitchens'] = ["interest"=>($value->kitchens >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['kitchenettes'] == 0){
-            $arr['kitchenettes'] = ["interest"=>($value->kitchenettes >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['bedrooms'] == 0){
-            $arr['bedrooms'] = ["interest"=>($value->bedrooms >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['laundries'] == 0){
-            $arr['laundries'] = ["interest"=>($value->laundries >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['bathrooms'] == 0){
-            $arr['bathrooms'] = ["interest"=>($value->bathrooms >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['ensuites'] == 0){
-            $arr['ensuites'] = ["interest"=>($value->ensuites >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['balconies'] == 0){
-            $arr['balconies'] = ["interest"=>($value->balconies >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['storage'] == 0){
-            $arr['storage'] = ["interest"=>($value->storage >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['study'] == 0){
-            $arr['study'] = ["interest"=>($value->study >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['garages'] == 0){
-            $arr['garages'] = ["interest"=>($value->garages >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }
-
-        if($arr['other'] == 0){
-            $arr['other'] = ["interest"=>($value->other >= 1 ? 1 : 0),"estimated_date"=>"","quoted_date"=>"","status"=>2];
-        }       
-
-        
+        $ar[$value->db_name] = ["interest"=>$value->interest_id,"estimated_date"=>$estimated_date,"quoted_date"=>$quoted_date,"status"=>$value->supply_status]; 
         
     }
 
-        if(count($arr)>0){
-           $result['info']['lists'] = [$arr];
-           return response()->json(['result'=>$result]);
-       }
-       
-       $result['error'] = 'Your listing has been coud not added!';
-       return response()->json(['result'=>$result],401);
+    $supply_items_territory = DB::table('supply_items_territory as sit')
+    ->where('project_id','=',$id)->first();                     
+
+    $ar['territory'] = $supply_items_territory->territory_id;
+
+    //print_r($ar);  
+    return $ar;
        
    }
 
@@ -854,26 +771,55 @@ class ProjectController extends Controller
     $data = DB::table('m_items')->get();
 
     $arr = [];
-    //print_r($input_data);
+    
+  //  print_r($input_data);
 
-    DB::table('supply_items_new')->where('project_id','=',$id)->delete();
+    DB::table('supply_items')->where('project_id','=',$id)->delete();
 
     foreach ($data as $key => $value) {
         
          // print_r($value->db_name);
-         // print_r($value->db_name);
-         
+         // print_r($input_data[$value->db_name.'_interest']);
+         //print_r($input_data['balconies_quoted_date']['formatted']);
+
+        $quoted_date = isset($input_data[$value->db_name.'_quoted_date']['formatted']) ? $input_data[$value->db_name.'_quoted_date']['formatted'] : '';
+
+        $estimated_date =  isset($input_data[$value->db_name.'_estimated_date']['formatted']) ? $input_data[$value->db_name.'_estimated_date']['formatted'] : '';
+
+       // print_r($quoted_date);
+        // if(empty($quoted_date)){
+        //     $quoted_date = '';
+        // }
+        // if(empty($estimated_date)){
+        //     $estimated_date = '';
+        // }
+
+        
+        if($quoted_date != ''){
+            $quoted_date = date("Y-m-d", strtotime($quoted_date));
+        }
+        if($estimated_date != ''){
+            $estimated_date = date("Y-m-d", strtotime($estimated_date));
+        }
+
         $arr[$key]['project_id'] = $id;
         $arr[$key]['items_id'] = $value->id;
         $arr[$key]['interest_id'] = $input_data[$value->db_name.'_interest'];
-        $arr[$key]['estimated_date'] = $input_data[$value->db_name.'_estimated_date'];
-        $arr[$key]['quoted_date'] = $input_data[$value->db_name.'_quoted_date'];
+        $arr[$key]['estimated_date'] = $estimated_date;
+        $arr[$key]['quoted_date'] =  $quoted_date;
         $arr[$key]['supply_status'] = $input_data[$value->db_name.'_status'];
         
         //print_r($arr[$key]);
-        $listId = DB::table('supply_items_new')->insertGetId($arr[$key]);
+        $listId = DB::table('supply_items')->insertGetId($arr[$key]);
     }
 
+    DB::table('supply_items_territory')->where('project_id','=',$id)->delete();
+
+    $st_data = array(
+        'project_id'=>$id,
+        'territory_id'=>$input_data['territory']
+    );
+    $st_id = DB::table('supply_items_territory')->insertGetId($st_data);
     
     $result = array();
     $res_msg = "Your record has been inserted sucessfully";

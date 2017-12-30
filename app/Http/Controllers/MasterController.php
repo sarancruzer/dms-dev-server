@@ -68,6 +68,7 @@ class MasterController extends Controller
     $input = $request->all();
   
     $lists = DB::table('project as p')
+                ->where('p.is_configured','=',1)
                 ->orderBy('p.project_name','asc')
                 ->get();       
 
