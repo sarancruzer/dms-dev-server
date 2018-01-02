@@ -69,11 +69,23 @@ class StateController extends Controller
         
         $checkData = DB::table('m_state')
             ->where('name','=',$input_data['name'])
-            ->select('name')
-            ->first($data);
-            if($checkData){
-                    return response()->json(['error'=>"Already exists!"],401);
+            ->orwhere('short_code','=',$input_data['short_code'])
+            ->select('*')
+            ->first();
+
+        // print_r($checkData);
+
+        // print($checkData->name);
+
+        if($checkData){
+            if($checkData->name == $input_data['name']){
+                $ret_msg = "Name is already exists";
+                return response()->json(['error'=>$ret_msg],401);
+            }else if($checkData->short_code == $input_data['short_code']){
+                $ret_msg = "Short code is already exists";
+                return response()->json(['error'=>$ret_msg],401);
             }
+        }
         
         $listId = DB::table('m_state')->insertGetId($data);
         $res_msg = "Your record has been inserted sucessfully";
