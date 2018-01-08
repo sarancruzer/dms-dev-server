@@ -458,7 +458,9 @@ class ProjectController extends Controller
         
     }
 
-    public function getProjectScopeDetailById(Request $request , $id)
+
+
+     public function getProjectScopeDetailById(Request $request , $id)
     {   
         $token = $this->getToken($request);
     	$user = JWTAuth::toUser($token);
@@ -467,21 +469,58 @@ class ProjectController extends Controller
         if($id == null){
             return response()->json(['error'=>'invalid entry!'],401);    
         }
-        
-        $lists = DB::table('project_scope')
-                     ->select('project_id','building_class_id','project_type_id','project_type','building_class','building_units','aluminium_windows','aluminium_doors','curtain_wall','aluminium_louvres','kitchens','kitchenettes','bedrooms','laundries','bathrooms','ensuites','balconies','storage','study','garages','other','aluminium_windows_price','aluminium_doors_price','curtain_wall_price','aluminium_louvres_price','kitchens_price','kitchenettes_price','bedrooms_price','laundries_price','bathrooms_price','ensuites_price','balconies_price','storage_price','study_price','garages_price','other_price')
-                     //->select('*')
-                    ->where('project_id','=',$id)->get();
-       
-        
+
+                
+       // $items_lists = DB::table('m_items')->where('project_id','=',$id)->get();
+
+        $ps_lists = DB::table('project_scope_new')->where('project_id','=',$id)->get();
+
+        $arr=[];
+
+        foreach ($ps_lists as $key => $value) {
+
+            $ps_child_items = DB::table('project_scope_child_new')->where('ps_id','=',$value->id)->get();
+
+            foreach ($ps_child_items as $k => $val) {
+
+                $item = DB::table('m_items')->where('id','=',$val->items_id)->first();
+
+                $project_types = DB::table('m_project_type')->where('id','=',$value->project_type_id)->first();
+                $building_classs = DB::table('m_building_class')->where('id','=',$value->building_class_id)->first();
+
+                $arr[$key]['project_id'] = $value->project_id;
+                $arr[$key]['project_type_id'] = $value->project_type_id;
+                $arr[$key]['building_class_id'] = $value->building_class_id;
+                $arr[$key]['project_type'] = $project_types->name;
+                $arr[$key]['building_class'] = $building_classs->name;
+                $arr[$key]['building_units'] = $value->building_units;
+                
+
+                $arr[$key][$item->db_name] = $val->value;
+                
+                $priceLists = DB::table('m_project_scope')
+                            ->where('building_class_id','=',$value->building_class_id)
+                            ->where('items_id','=',$val->items_id)
+                            ->first();
+
+                $arr[$key][$item->db_name.'_price'] = $priceLists->price;
+                
+            }  
+
+        }
+
+       // print_r($arr);
+              
+
         $project_quote_data = DB::table('project_scope_quote')->where('project_id','=',$id)->first(); 
         
-        $projectLists = DB::table('project')->where('id','=',$id)->first();
+         $projectLists = DB::table('project')->where('id','=',$id)->first();
 
-        if(count($lists)>0){
+
+        if(count($ps_lists)>0){
             //echo "ALREADY  EXISTS";
-            $result['info']['lists'] = $lists;
-            $result['info']['quote'] = $project_quote_data->quote;
+            $result['info']['lists'] = $arr;
+            $result['info']['quote'] = (int) $project_quote_data->quote;
             $result['info']['project_name'] = $projectLists->project_name;
             return response()->json(['result'=>$result]);
         }else{
@@ -498,6 +537,48 @@ class ProjectController extends Controller
         
     }
 
+
+    // public function getProjectScopeDetailById(Request $request , $id)
+    // {   
+    //     $token = $this->getToken($request);
+    // 	$user = JWTAuth::toUser($token);
+    //     $input = $request->all();
+
+    //     if($id == null){
+    //         return response()->json(['error'=>'invalid entry!'],401);    
+    //     }
+        
+    //     $lists = DB::table('project_scope')
+    //                  ->select('project_id','building_class_id','project_type_id','project_type','building_class','building_units','aluminium_windows','aluminium_doors','curtain_wall','aluminium_louvres','kitchens','kitchenettes','bedrooms','laundries','bathrooms','ensuites','balconies','storage','study','garages','other','aluminium_windows_price','aluminium_doors_price','curtain_wall_price','aluminium_louvres_price','kitchens_price','kitchenettes_price','bedrooms_price','laundries_price','bathrooms_price','ensuites_price','balconies_price','storage_price','study_price','garages_price','other_price')
+    //                  //->select('*')
+    //                 ->where('project_id','=',$id)->get();
+       
+        
+    //     $project_quote_data = DB::table('project_scope_quote')->where('project_id','=',$id)->first(); 
+        
+    //     $projectLists = DB::table('project')->where('id','=',$id)->first();
+
+    //     if(count($lists)>0){
+    //         //echo "ALREADY  EXISTS";
+    //         $result['info']['lists'] = $lists;
+    //         $result['info']['quote'] = $project_quote_data->quote;
+    //         $result['info']['project_name'] = $projectLists->project_name;
+    //         return response()->json(['result'=>$result]);
+    //     }else{
+    //         //echo "NOT EXISTS";
+    //        $res =  $this->getProjectScopeMasterDataById($id);
+    //        $result['info']['lists'] = $res;
+    //        $result['info']['quote'] = "";
+    //        $result['info']['project_name'] = $projectLists->project_name;
+
+    //        return response()->json(['result'=>$result]);
+    //     }
+    //     return response()->json(['error'=>'Your listing has been coud not added!'],401);
+                            
+        
+    // }
+
+
     public function updateProjectScopeDetail(Request $request, $id)
     {
         $token = $this->getToken($request);
@@ -512,12 +593,42 @@ class ProjectController extends Controller
         $input_data = $input['info']['project_details'];
         $data = $input_data;
         
+        $items_lists = DB::table('m_items')->get();
 
-        DB::table('project_scope')->where('project_id','=',$id)->delete();
-        foreach ($data as $key => $value) {
-            $value['project_id'] = $id;  
-            
-            $listId = DB::table('project_scope')->insertGetId($value);
+        DB::table('project_scope_new')->where('project_id','=',$id)->delete();
+
+        DB::table('project_scope_child_new')->where('project_id','=',$id)->delete();
+
+        $arr = [];
+        $arrr = [];
+        foreach ($input_data as $key => $value) {
+            $arr['project_id'] = $id;  
+            $arr['project_type_id'] = $value['project_type_id'];  
+            $arr['building_class_id'] = $value['building_class_id'];  
+            $arr['building_units'] = $value['building_units'];    
+
+            //print_r($arr);
+            $listId = DB::table('project_scope_new')->insertGetId($arr);
+            //$listId = 2;
+            foreach ($items_lists as $k => $val) {
+                
+                $arrr['ps_id'] = $listId;    
+                $arrr['project_id'] = $id;
+                
+                // $items = DB::table('m_items')->where('db_name','=',$$val->db_name])->first();
+
+                //echo $value[$val->db_name];
+
+                $arrr['items_id'] = $val->id;  
+                if($val->db_name != 'all_joinery'){
+                    $arrr['value'] = $value[$val->db_name];        
+                }                
+
+              //  print_r($arrr);
+                
+                $listIdd = DB::table('project_scope_child_new')->insertGetId($arrr);
+
+            }   
         }
 
 
@@ -594,7 +705,7 @@ class ProjectController extends Controller
            return response()->json(['error'=>'invalid entry!'],401);    
        }
            
-        $lists = DB::table('supply_items as si')
+    $lists = DB::table('supply_items as si')
                 ->where('project_id','=',$id)->get();
 
      $projectLists = DB::table('project')->where('id','=',$id)->first();
@@ -619,102 +730,138 @@ class ProjectController extends Controller
 
    public function getNewSupplyItems($id){
 
-     $ps_lists = DB::table('project_scope as ps')
-                    ->where('project_id','=',$id)->get();
-
+     
     //print_r($ps_lists);
-    
-
     $arr = [];
     
-    $arr['all_joinery'] = 0;
-    $arr['aluminium_windows'] = 0;
-    $arr['aluminium_doors'] = 0;
-    $arr['curtain_wall'] = 0;
-    $arr['aluminium_louvres'] = 0;
-    $arr['kitchens'] = 0;
-    $arr['kitchenettes'] = 0;
-    $arr['bedrooms'] = 0;
-    $arr['laundries'] = 0;
-    $arr['bathrooms'] = 0;
-    $arr['ensuites'] = 0;
-    $arr['balconies'] = 0;
-    $arr['storage'] = 0;
-    $arr['study'] = 0;
-    $arr['garages'] = 0;
-    $arr['other'] = 0;
+    $app= [];
+    $ps_lists = DB::table('project_scope_new as psn')
+                    ->where('project_id','=',$id)->get();
 
-  
+    $items_supply = DB::table('m_items_supply')->get();
 
-    foreach ($ps_lists as $key => $value) {
-       // print_r($value);
-       
-        if($arr['all_joinery'] == 0){
-            $arr['all_joinery'] = ["greyout"=>($value->other >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+    foreach ($items_supply as $key => $value) {
+        
+        $ps_child_lists = DB::table('project_scope_child_new')->where('project_id','=',$id)->get();
+
+        foreach ($ps_child_lists as $k => $val) {
+
+        $items_lists = DB::table('m_items')->where('id','=',$val->items_id)->first();
+
+        if($items_lists){
+
+        $shrt_code = $items_lists->short_code;
+        $items_supply_lists = DB::table('m_items_supply')
+                        ->whereRaw('FIND_IN_SET(?,short_code)',[$shrt_code])
+                        ->get();
+
+        if(count($items_supply_lists)>0){
+            $app[$value->db_name] = ["greyout"=>1,"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        }else{
+            $app[$value->db_name] = ["greyout"=>0,"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
 
-        if($arr['aluminium_windows'] == 0){
-            $arr['aluminium_windows'] = ["greyout"=>($value->aluminium_windows >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1]; 
-        }
 
-        if($arr['aluminium_doors'] == 0){
-            $arr['aluminium_doors'] = ["greyout"=>($value->aluminium_doors >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['curtain_wall'] == 0){
-            $arr['curtain_wall'] = ["greyout"=>($value->curtain_wall >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['aluminium_louvres'] == 0){
-            $arr['aluminium_louvres'] = ["greyout"=>($value->aluminium_louvres >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['kitchens'] == 0){
-            $arr['kitchens'] = ["greyout"=>($value->kitchens >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['kitchenettes'] == 0){
-            $arr['kitchenettes'] = ["greyout"=>($value->kitchenettes >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['bedrooms'] == 0){
-            $arr['bedrooms'] = ["greyout"=>($value->bedrooms >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['laundries'] == 0){
-            $arr['laundries'] = ["greyout"=>($value->laundries >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['bathrooms'] == 0){
-            $arr['bathrooms'] = ["greyout"=>($value->bathrooms >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['ensuites'] == 0){
-            $arr['ensuites'] = ["greyout"=>($value->ensuites >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['balconies'] == 0){
-            $arr['balconies'] = ["greyout"=>($value->balconies >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['storage'] == 0){
-            $arr['storage'] = ["greyout"=>($value->storage >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['study'] == 0){
-            $arr['study'] = ["greyout"=>($value->study >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['garages'] == 0){
-            $arr['garages'] = ["greyout"=>($value->garages >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-        if($arr['other'] == 0){
-            $arr['other'] = ["greyout"=>($value->other >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
     }
 
-    return $arr;
+    }
+
+    //print_r($app);
+
+    foreach ($ps_lists as $key => $value) {
+       // print_r($value);
+    $ps_child_lists = DB::table('project_scope_child_new')->where('ps_id','=',$value->id)->get();
+
+    foreach ($ps_child_lists as $k => $val) {
+        
+        $items_lists = DB::table('m_items')->where('id','=',$val->items_id)->first();
+        if($items_lists){
+
+        $shrt_code = $items_lists->short_code;
+        $items_supply_lists = DB::table('m_items_supply')
+                        ->whereRaw('FIND_IN_SET(?,short_code)',[$shrt_code])
+                        ->get();
+
+        if(count($items_supply_lists)>0){
+            $arr[$items_lists->db_name] = ["greyout"=>1,"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        }else{
+            $arr[$items_lists->db_name] = ["greyout"=>0,"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        }
+
+        }
+        
+
+    }
+
+     //print_r($arr);
+    
+        // if($arr['all_joinery'] == 0){
+        //     $arr['all_joinery'] = ["greyout"=>($value->other >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['aluminium_windows'] == 0){
+        //     $arr['aluminium_windows'] = ["greyout"=>($value->aluminium_windows >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1]; 
+        // }
+
+        // if($arr['aluminium_doors'] == 0){
+        //     $arr['aluminium_doors'] = ["greyout"=>($value->aluminium_doors >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['curtain_wall'] == 0){
+        //     $arr['curtain_wall'] = ["greyout"=>($value->curtain_wall >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['aluminium_louvres'] == 0){
+        //     $arr['aluminium_louvres'] = ["greyout"=>($value->aluminium_louvres >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['kitchens'] == 0){
+        //     $arr['kitchens'] = ["greyout"=>($value->kitchens >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['kitchenettes'] == 0){
+        //     $arr['kitchenettes'] = ["greyout"=>($value->kitchenettes >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['bedrooms'] == 0){
+        //     $arr['bedrooms'] = ["greyout"=>($value->bedrooms >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['laundries'] == 0){
+        //     $arr['laundries'] = ["greyout"=>($value->laundries >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['bathrooms'] == 0){
+        //     $arr['bathrooms'] = ["greyout"=>($value->bathrooms >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['ensuites'] == 0){
+        //     $arr['ensuites'] = ["greyout"=>($value->ensuites >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['balconies'] == 0){
+        //     $arr['balconies'] = ["greyout"=>($value->balconies >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['storage'] == 0){
+        //     $arr['storage'] = ["greyout"=>($value->storage >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['study'] == 0){
+        //     $arr['study'] = ["greyout"=>($value->study >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['garages'] == 0){
+        //     $arr['garages'] = ["greyout"=>($value->garages >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+
+        // if($arr['other'] == 0){
+        //     $arr['other'] = ["greyout"=>($value->other >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        // }
+    }
+
+    return $app;
     
    }
 
@@ -723,8 +870,8 @@ class ProjectController extends Controller
    {   
      
     $lists = DB::table('supply_items as si')
-                     ->leftjoin('m_items as i','i.id','=','si.items_id')
-                     ->select('si.*','i.name','i.db_name')
+                     ->leftjoin('m_items_supply as is','is.id','=','si.items_id')
+                     ->select('si.*','is.name','is.db_name')
                      ->where('project_id','=',$id)->get();
 
     //print_r($lists);
@@ -768,7 +915,7 @@ class ProjectController extends Controller
     $input = $request->all();
 
     $input_data = $input['info'];
-    $data = DB::table('m_items')->get();
+    $data = DB::table('m_items_supply')->get();
 
     $arr = [];
     
