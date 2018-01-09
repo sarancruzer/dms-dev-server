@@ -657,7 +657,7 @@ class ProjectController extends Controller
 
                 $arrr['items_id'] = $val->id;  
                 if($val->db_name != 'all_joinery'){
-                    $arrr['value'] = $value[$val->db_name];        
+                    $arrr['qty'] = $value[$val->db_name];        
                 }                
 
               //  print_r($arrr);
