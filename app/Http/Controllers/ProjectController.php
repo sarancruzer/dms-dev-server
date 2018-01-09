@@ -426,6 +426,8 @@ class ProjectController extends Controller
         
         $lists = DB::table('m_items')->get();        
         $newArr = [];
+        $mainArr = [];
+        $itemsArr = [];
         
         foreach ($cart as $key => $value) {            
             foreach ($lists as $k => $val) {
@@ -438,17 +440,33 @@ class ProjectController extends Controller
                  $newArr[$kk][$val->db_name] = '';
                  $newArr[$kk]['project_id'] = $id;
                  
+                 if($val->id != 17){
+                    
                  $priceLists = DB::table('m_project_scope')
                             ->where('building_class_id','=',$value['building_class_id'])
                             ->where('items_id','=',$val->id)
                             ->first();
+                //   print_r($priceLists);
+                //   echo $priceLists->price;
+
                  $newArr[$kk][$val->db_name."_price"] = $priceLists->price;   
+                 
+                 $itemsArr[$kk]['project_type'] = $value['project_type'];
+                 $itemsArr[$kk]['building_class'] = $value['building_class'];
+                 $itemsArr[$kk]['building_units'] = $value['building_units'];
+                 $itemsArr[$kk][$val->db_name] = '';
+
+                }
+
                  //$newArr[$kk]['items'][$k]['item'] = $val->db_name;
                  //$newArr[$kk]['items'][$k]['price'] = $priceLists->price;                 
             }
         }
+
+        $mainArr['lists'] = $newArr;
+        $mainArr['items'] = $itemsArr;
      
-        return $newArr;
+        return $mainArr;
         // if(count($newArr)>0){
         //     $result['info']['lists'] = $newArr;
         //     return response()->json(['result'=>$result]);
@@ -476,6 +494,7 @@ class ProjectController extends Controller
         $ps_lists = DB::table('project_scope_new')->where('project_id','=',$id)->get();
 
         $arr=[];
+        $arrr = [];
 
         foreach ($ps_lists as $key => $value) {
 
@@ -491,19 +510,34 @@ class ProjectController extends Controller
                 $arr[$key]['project_id'] = $value->project_id;
                 $arr[$key]['project_type_id'] = $value->project_type_id;
                 $arr[$key]['building_class_id'] = $value->building_class_id;
+                
                 $arr[$key]['project_type'] = $project_types->name;
                 $arr[$key]['building_class'] = $building_classs->name;
                 $arr[$key]['building_units'] = $value->building_units;
-                
 
-                $arr[$key][$item->db_name] = $val->value;
+                $arr[$key][$item->db_name] = $val->qty;
                 
+                if($val->items_id != 17){
+
                 $priceLists = DB::table('m_project_scope')
                             ->where('building_class_id','=',$value->building_class_id)
                             ->where('items_id','=',$val->items_id)
                             ->first();
 
                 $arr[$key][$item->db_name.'_price'] = $priceLists->price;
+
+
+                $arrr[$key]['project_type'] = $project_types->name;
+                $arrr[$key]['building_class'] = $building_classs->name;
+                $arrr[$key]['building_units'] = $value->building_units;
+
+                $arrr[$key][$item->db_name] = $val->qty;
+
+                }
+
+
+
+               
                 
             }  
 
@@ -515,19 +549,21 @@ class ProjectController extends Controller
         $project_quote_data = DB::table('project_scope_quote')->where('project_id','=',$id)->first(); 
         
          $projectLists = DB::table('project')->where('id','=',$id)->first();
-
+         
 
         if(count($ps_lists)>0){
             //echo "ALREADY  EXISTS";
             $result['info']['lists'] = $arr;
+            $result['info']['items_lists'] = $arrr;
             $result['info']['quote'] = (int) $project_quote_data->quote;
             $result['info']['project_name'] = $projectLists->project_name;
             return response()->json(['result'=>$result]);
         }else{
             //echo "NOT EXISTS";
            $res =  $this->getProjectScopeMasterDataById($id);
-           $result['info']['lists'] = $res;
-           $result['info']['quote'] = "";
+           $result['info']['lists'] = $res['lists'];
+           $result['info']['items_lists'] = $res['items'];
+           $result['info']['quote'] = 0;
            $result['info']['project_name'] = $projectLists->project_name;
 
            return response()->json(['result'=>$result]);
@@ -740,14 +776,25 @@ class ProjectController extends Controller
 
     $items_supply = DB::table('m_items_supply')->get();
 
+
+    $a = [];
+    // foreach ($items_supply as $key => $value) {
+
+    //     $app[$value->db_name]['greyout'] = "";
+    // }
+
+   // print_r($a);
+
+
+
     foreach ($items_supply as $key => $value) {
-        
+
         $ps_child_lists = DB::table('project_scope_child_new')->where('project_id','=',$id)->get();
+
 
         foreach ($ps_child_lists as $k => $val) {
 
         $items_lists = DB::table('m_items')->where('id','=',$val->items_id)->first();
-
         if($items_lists){
 
         $shrt_code = $items_lists->short_code;
@@ -755,45 +802,27 @@ class ProjectController extends Controller
                         ->whereRaw('FIND_IN_SET(?,short_code)',[$shrt_code])
                         ->get();
 
-        if(count($items_supply_lists)>0){
-            $app[$value->db_name] = ["greyout"=>1,"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+        $pscn_lists = DB::table('project_scope_child_new')
+                                ->where('project_id','=',$id)
+                                ->where('items_id','=',$val->items_id)
+                                ->where('qty','>',0)
+                                ->get();
+
+        if(!empty($pscn_lists)){
+            $app[$value->db_name] = ["greyout"=>"","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+
         }else{
-            $app[$value->db_name] = ["greyout"=>0,"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
-
-        }
-    }
-
-    }
-
-    //print_r($app);
-
-    foreach ($ps_lists as $key => $value) {
-       // print_r($value);
-    $ps_child_lists = DB::table('project_scope_child_new')->where('ps_id','=',$value->id)->get();
-
-    foreach ($ps_child_lists as $k => $val) {
-        
-        $items_lists = DB::table('m_items')->where('id','=',$val->items_id)->first();
-        if($items_lists){
-
-        $shrt_code = $items_lists->short_code;
-        $items_supply_lists = DB::table('m_items_supply')
-                        ->whereRaw('FIND_IN_SET(?,short_code)',[$shrt_code])
-                        ->get();
-
-        if(count($items_supply_lists)>0){
-            $arr[$items_lists->db_name] = ["greyout"=>1,"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }else{
-            $arr[$items_lists->db_name] = ["greyout"=>0,"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
-
+            $app[$value->db_name] = ["greyout"=>"disabled","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         }
         
+        }
+    }
 
     }
 
+   // print_r($app);
+
+   
      //print_r($arr);
     
         // if($arr['all_joinery'] == 0){
@@ -859,7 +888,7 @@ class ProjectController extends Controller
         // if($arr['other'] == 0){
         //     $arr['other'] = ["greyout"=>($value->other >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
         // }
-    }
+    //}
 
     return $app;
     
@@ -892,8 +921,8 @@ class ProjectController extends Controller
 
      //  $quoted_date = date("d-m-Y", strtotime($value->quoted_date));
        // $estimated_date = date("d-m-Y", strtotime($value->estimated_date));
-
-        $ar[$value->db_name] = ["interest"=>$value->interest_id,"estimated_date"=>$estimated_date,"quoted_date"=>$quoted_date,"status"=>$value->supply_status]; 
+       
+        $ar[$value->db_name] = ["greyout"=>($value->greyout == 0 ? "disabled" : ""),"interest"=>$value->interest_id,"estimated_date"=>$estimated_date,"quoted_date"=>$quoted_date,"status"=>$value->supply_status]; 
         
     }
 
@@ -955,6 +984,10 @@ class ProjectController extends Controller
         $arr[$key]['estimated_date'] = $estimated_date;
         $arr[$key]['quoted_date'] =  $quoted_date;
         $arr[$key]['supply_status'] = $input_data[$value->db_name.'_status'];
+
+        //$arr[$key]['greyout'] = $input_data[$value->db_name.'_greyout'];
+        $arr[$key]['greyout'] = $input_data[$value->db_name.'_greyout'] == "disabled" ? 0 : 1;
+        
         
         //print_r($arr[$key]);
         $listId = DB::table('supply_items')->insertGetId($arr[$key]);
