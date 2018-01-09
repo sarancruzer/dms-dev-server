@@ -765,8 +765,7 @@ class ProjectController extends Controller
 
 
    public function getNewSupplyItems($id){
-
-     
+    
     //print_r($ps_lists);
     $arr = [];
     
@@ -777,48 +776,106 @@ class ProjectController extends Controller
     $items_supply = DB::table('m_items_supply')->get();
 
 
-    $a = [];
-    // foreach ($items_supply as $key => $value) {
-
-    //     $app[$value->db_name]['greyout'] = "";
-    // }
-
-   // print_r($a);
-
-
+    $arr=[];
+    $db_arr=[];
 
     foreach ($items_supply as $key => $value) {
+       
+                //$ps_child_lists = DB::table('project_scope_child_new')->where('project_id','=',$id)->get();
+            $shrt_code = $value->short_code;
+            $pieces = explode(",", $shrt_code);
+            $strval="";
+            foreach ($pieces as $key => $srt) {
+               $strval .= "'".$srt."',";
+            }
+            
+            $outval=substr($strval,0,strlen($strval)-1);
+            //print($outval);
+            $items_lists = DB::table('m_items')->whereRaw('short_code IN ('.$outval.')')
+            ->get(); 
+            // print_r($items_lists);
+            foreach ($items_lists as $k => $val) {
 
-        $ps_child_lists = DB::table('project_scope_child_new')->where('project_id','=',$id)->get();
-
-
-        foreach ($ps_child_lists as $k => $val) {
-
-        $items_lists = DB::table('m_items')->where('id','=',$val->items_id)->first();
-        if($items_lists){
-
-        $shrt_code = $items_lists->short_code;
-        $items_supply_lists = DB::table('m_items_supply')
-                        ->whereRaw('FIND_IN_SET(?,short_code)',[$shrt_code])
-                        ->get();
-
-        $pscn_lists = DB::table('project_scope_child_new')
+                
+            $p_lists = DB::table('project_scope_child_new')
                                 ->where('project_id','=',$id)
-                                ->where('items_id','=',$val->items_id)
+                                ->where('items_id','=',$val->id)
                                 ->where('qty','>',0)
                                 ->get();
-
-        if(!empty($pscn_lists)){
-            $app[$value->db_name] = ["greyout"=>"","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-
-        }else{
-            $app[$value->db_name] = ["greyout"=>"disabled","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        }
+         
+        if(count($p_lists)>0){
+             if(!in_array($value->db_name,$db_arr)){
+                array_push($db_arr,$value->db_name);
+                 $app[$value->db_name] = ["greyout"=>"","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+             }
         
         }
-    }
+        else{
+            if(!in_array($value->db_name,$db_arr)){
+                array_push($db_arr,$value->db_name);
+                $app[$value->db_name] = ["greyout"=>"disabled","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+            }
+        }
+        
 
-    }
+
+            
+         
+
+            // if(!empty($p_lists)){
+            //     $shrt_code = $val->short_code;               
+            //     $items_supply_lists = DB::table('m_items_supply')
+            //                     ->whereRaw('FIND_IN_SET(?,short_code)',[$shrt_code])
+            //                     ->get();        
+              
+            //         $app[$value->db_name] = ["greyout"=>"","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+              
+            //   }else{
+            //         $app[$value->db_name] = ["greyout"=>"disabled","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>0];
+            //   }
+        
+            }
+        
+        }
+
+    
+        // print_r(count($app));
+
+
+    
+    // foreach ($items_supply as $key => $value) {
+
+    //     $ps_child_lists = DB::table('project_scope_child_new')->where('project_id','=',$id)->get();
+
+
+    //     foreach ($ps_child_lists as $k => $val) {
+
+    //     $items_lists = DB::table('m_items')->where('id','=',$val->items_id)->first();
+
+    //     if($items_lists){
+    //     $shrt_code = $items_lists->short_code;
+    //     $items_supply_lists = DB::table('m_items_supply')
+    //                     ->whereRaw('FIND_IN_SET(?,short_code)',[$shrt_code])
+    //                     ->get();
+
+    //     $pscn_lists = DB::table('project_scope_child_new')
+    //                             ->where('project_id','=',$id)
+    //                             ->where('items_id','=',$val->items_id)
+    //                             ->where('qty','>',0)
+    //                             ->get();
+
+    //         if(!empty($pscn_lists)){
+    //             $app[$value->db_name] = ["greyout"=>"","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+                
+    //         }else{
+    //             $app[$value->db_name] = ["greyout"=>"disabled","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
+    //         }
+
+    //     }
+
+    // }
+
+    // }
 
    // print_r($app);
 
