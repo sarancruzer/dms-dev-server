@@ -440,7 +440,7 @@ class ProjectController extends Controller
                  $newArr[$kk][$val->db_name] = '';
                  $newArr[$kk]['project_id'] = $id;
                  
-                 if($val->id != 17){
+                 if($val->id != 18){
                     
                  $priceLists = DB::table('m_project_scope')
                             ->where('building_class_id','=',$value['building_class_id'])
@@ -517,7 +517,7 @@ class ProjectController extends Controller
 
                 $arr[$key][$item->db_name] = $val->qty;
                 
-                if($val->items_id != 17){
+                if($val->items_id != 18){
 
                 $priceLists = DB::table('m_project_scope')
                             ->where('building_class_id','=',$value->building_class_id)
@@ -797,7 +797,7 @@ class ProjectController extends Controller
             foreach ($items_lists as $k => $val) {
 
                 
-            $p_lists = DB::table('project_scope_child_new')
+        $p_lists = DB::table('project_scope_child_new')
                                 ->where('project_id','=',$id)
                                 ->where('items_id','=',$val->id)
                                 ->where('qty','>',0)
@@ -816,137 +816,13 @@ class ProjectController extends Controller
                 $app[$value->db_name] = ["greyout"=>"disabled","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
             }
         }
+
+
         
+     }
+}
 
-
-            
-         
-
-            // if(!empty($p_lists)){
-            //     $shrt_code = $val->short_code;               
-            //     $items_supply_lists = DB::table('m_items_supply')
-            //                     ->whereRaw('FIND_IN_SET(?,short_code)',[$shrt_code])
-            //                     ->get();        
-              
-            //         $app[$value->db_name] = ["greyout"=>"","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-              
-            //   }else{
-            //         $app[$value->db_name] = ["greyout"=>"disabled","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>0];
-            //   }
-        
-            }
-        
-        }
-
-    
-        // print_r(count($app));
-
-
-    
-    // foreach ($items_supply as $key => $value) {
-
-    //     $ps_child_lists = DB::table('project_scope_child_new')->where('project_id','=',$id)->get();
-
-
-    //     foreach ($ps_child_lists as $k => $val) {
-
-    //     $items_lists = DB::table('m_items')->where('id','=',$val->items_id)->first();
-
-    //     if($items_lists){
-    //     $shrt_code = $items_lists->short_code;
-    //     $items_supply_lists = DB::table('m_items_supply')
-    //                     ->whereRaw('FIND_IN_SET(?,short_code)',[$shrt_code])
-    //                     ->get();
-
-    //     $pscn_lists = DB::table('project_scope_child_new')
-    //                             ->where('project_id','=',$id)
-    //                             ->where('items_id','=',$val->items_id)
-    //                             ->where('qty','>',0)
-    //                             ->get();
-
-    //         if(!empty($pscn_lists)){
-    //             $app[$value->db_name] = ["greyout"=>"","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-                
-    //         }else{
-    //             $app[$value->db_name] = ["greyout"=>"disabled","interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-    //         }
-
-    //     }
-
-    // }
-
-    // }
-
-   // print_r($app);
-
-   
-     //print_r($arr);
-    
-        // if($arr['all_joinery'] == 0){
-        //     $arr['all_joinery'] = ["greyout"=>($value->other >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['aluminium_windows'] == 0){
-        //     $arr['aluminium_windows'] = ["greyout"=>($value->aluminium_windows >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1]; 
-        // }
-
-        // if($arr['aluminium_doors'] == 0){
-        //     $arr['aluminium_doors'] = ["greyout"=>($value->aluminium_doors >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['curtain_wall'] == 0){
-        //     $arr['curtain_wall'] = ["greyout"=>($value->curtain_wall >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['aluminium_louvres'] == 0){
-        //     $arr['aluminium_louvres'] = ["greyout"=>($value->aluminium_louvres >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['kitchens'] == 0){
-        //     $arr['kitchens'] = ["greyout"=>($value->kitchens >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['kitchenettes'] == 0){
-        //     $arr['kitchenettes'] = ["greyout"=>($value->kitchenettes >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['bedrooms'] == 0){
-        //     $arr['bedrooms'] = ["greyout"=>($value->bedrooms >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['laundries'] == 0){
-        //     $arr['laundries'] = ["greyout"=>($value->laundries >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['bathrooms'] == 0){
-        //     $arr['bathrooms'] = ["greyout"=>($value->bathrooms >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['ensuites'] == 0){
-        //     $arr['ensuites'] = ["greyout"=>($value->ensuites >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['balconies'] == 0){
-        //     $arr['balconies'] = ["greyout"=>($value->balconies >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['storage'] == 0){
-        //     $arr['storage'] = ["greyout"=>($value->storage >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['study'] == 0){
-        //     $arr['study'] = ["greyout"=>($value->study >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['garages'] == 0){
-        //     $arr['garages'] = ["greyout"=>($value->garages >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-
-        // if($arr['other'] == 0){
-        //     $arr['other'] = ["greyout"=>($value->other >= 1 ? 1 : 0),"interest"=>1,"estimated_date"=>"","quoted_date"=>"","status"=>1];
-        // }
-    //}
-
+    $app['territory'] = 1;
     return $app;
     
    }
@@ -979,7 +855,7 @@ class ProjectController extends Controller
      //  $quoted_date = date("d-m-Y", strtotime($value->quoted_date));
        // $estimated_date = date("d-m-Y", strtotime($value->estimated_date));
        
-        $ar[$value->db_name] = ["greyout"=>($value->greyout == 0 ? "disabled" : ""),"interest"=>$value->interest_id,"estimated_date"=>$estimated_date,"quoted_date"=>$quoted_date,"status"=>$value->supply_status]; 
+        $ar[$value->db_name] = ["greyout"=>($value->greyout == "disabled" ? 0 : 1),"interest"=>$value->interest_id,"estimated_date"=>$estimated_date,"quoted_date"=>$quoted_date,"status"=>$value->supply_status]; 
         
     }
 
