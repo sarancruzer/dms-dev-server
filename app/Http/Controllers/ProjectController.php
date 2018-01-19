@@ -745,7 +745,11 @@ class ProjectController extends Controller
                 ->where('project_id','=',$id)->get();
 
      $projectLists = DB::table('project')->where('id','=',$id)->first();
+
+     $projectQuote = DB::table('project_scope_quote')->where('project_id','=',$id)->first();  
+
      $result['info']['project_name'] = $projectLists->project_name; 
+     $result['info']['project_quote'] = $projectQuote->quote; 
      if(count($lists)>0){
          //print("EXISTING ");
            $arr = $this->getExistingSupplyItems($id);
