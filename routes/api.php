@@ -82,6 +82,7 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	
 	Route::post('getBuildingClassItems/{id}', 'ProjectScopeController@getBuildingClassItems');		
 	Route::post('updateBuildingClassItems/{id}', 'ProjectScopeController@updateBuildingClassItems');		
+	Route::post('getBuildingClassLists', 'ProjectScopeController@getBuildingClassLists');		
 
 	// Route::post('getTerritory', 'TerritoryController@index');
 	// Route::post('addTerritory', 'TerritoryController@create');
