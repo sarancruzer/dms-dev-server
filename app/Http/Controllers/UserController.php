@@ -139,7 +139,7 @@ class UserController extends Controller
             return response()->json(['error'=>'invalid entry!'],401);    
         }
         
-        $lists = DB::table('listings')->where('id','=',$id)->first();
+        $lists = DB::table('users')->where('id','=',$id)->first();
         
         if(count($lists)>0){
             $result['info']['lists'] = $lists;
