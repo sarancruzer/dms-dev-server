@@ -145,7 +145,7 @@ class UserController extends Controller
             $result['info']['lists'] = $lists;
             return response()->json(['result'=>$result]);
         }
-        return response()->json(['error'=>'Your listing has been coud not added!'],401);
+        return response()->json(['error'=>'Your users has been coud not added!'],401);
                             
         
     }
