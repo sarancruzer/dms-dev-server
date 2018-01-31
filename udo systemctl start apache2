@@ -1,0 +1,20 @@
+● apache2.service - LSB: Apache2 web server
+   Loaded: loaded (/etc/init.d/apache2; bad; vendor preset: enabled)
+  Drop-In: /lib/systemd/system/apache2.service.d
+           └─apache2-systemd.conf
+   Active: inactive (dead) since Mon 2018-01-29 09:11:56 UTC; 2s ago
+     Docs: man:systemd-sysv-generator(8)
+  Process: 2297 ExecStop=/etc/init.d/apache2 stop (code=exited, status=0/SUCCESS)
+  Process: 2245 ExecReload=/etc/init.d/apache2 reload (code=exited, status=0/SUCCESS)
+  Process: 2208 ExecStart=/etc/init.d/apache2 start (code=exited, status=0/SUCCESS)
+
+Jan 29 09:10:16 ip-172-31-28-85 apache2[2208]:  *
+Jan 29 09:10:16 ip-172-31-28-85 systemd[1]: Started LSB: Apache2 web server.
+Jan 29 09:10:20 ip-172-31-28-85 systemd[1]: Reloading LSB: Apache2 web server.
+Jan 29 09:10:20 ip-172-31-28-85 apache2[2245]:  * Reloading Apache httpd web server apache2
+Jan 29 09:10:20 ip-172-31-28-85 apache2[2245]:  *
+Jan 29 09:10:20 ip-172-31-28-85 systemd[1]: Reloaded LSB: Apache2 web server.
+Jan 29 09:11:55 ip-172-31-28-85 systemd[1]: Stopping LSB: Apache2 web server...
+Jan 29 09:11:55 ip-172-31-28-85 apache2[2297]:  * Stopping Apache httpd web server apache2
+Jan 29 09:11:56 ip-172-31-28-85 apache2[2297]:  *
+Jan 29 09:11:56 ip-172-31-28-85 systemd[1]: Stopped LSB: Apache2 web server.
