@@ -33,9 +33,12 @@ class BuildingClassController extends Controller
        $user = JWTAuth::toUser($token);
        $input = $request->all();
 
-       $lists = DB::table('m_building_class')
-               ->where('name','like','%'.$input['q'].'%')
-               ->orderBy($input['column'],$input['orderby'])
+       $lists = DB::table('m_building_class as bc')
+               ->leftjoin('m_project_type as pt','pt.id','=','bc.project_type_id')
+               ->select('bc.*','pt.name as project_type')
+               ->where('bc.name','like','%'.$input['q'].'%')
+               ->where('bc.is_configured','=',1)
+               ->orderBy('bc.'.$input['column'],$input['orderby'])
                ->paginate(5);        
       
        $result = array();

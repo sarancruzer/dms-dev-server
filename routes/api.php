@@ -60,6 +60,7 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('addProjectType', 'ProjectTypeController@create');
 	Route::post('updateProjectType/{id}', 'ProjectTypeController@update');		
 	Route::post('deleteProjectType/{id}', 'ProjectTypeController@destroy');
+	
 
 	//Master modules
 	Route::post('getBuildingClass', 'BuildingClassController@index');
@@ -79,6 +80,9 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	Route::post('updateProjectScope/{id}', 'ProjectScopeController@update');		
 	Route::post('deleteProjectScope/{id}', 'ProjectScopeController@destroy');
 	
+	Route::post('getBuildingClassItems/{id}', 'ProjectScopeController@getBuildingClassItems');		
+	Route::post('updateBuildingClassItems/{id}', 'ProjectScopeController@updateBuildingClassItems');		
+	Route::post('getBuildingClassLists', 'ProjectScopeController@getBuildingClassLists');		
 
 	// Route::post('getTerritory', 'TerritoryController@index');
 	// Route::post('addTerritory', 'TerritoryController@create');
@@ -147,6 +151,11 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	//get all Masters
 	Route::post('getMasters', 'MasterController@getMasterDetails');		
 	Route::post('getContacts', 'MasterController@getContactDetails');		
+
+	Route::post('getClientReport','ReportController@getClientReport');
+	
+	
+	
 		
 
 });

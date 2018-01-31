@@ -70,6 +70,9 @@ class ProjectScopeController extends Controller
        $data['building_class_id'] = $input_data['building_class_id'];
        $data['items_id'] = $input_data['items_id'];
        $data['price'] = $input_data['price'];
+
+
+
        
     //    $checkData = DB::table('m_project_scope')
     //        ->where('name','=',$input_data['name'])
@@ -89,6 +92,101 @@ class ProjectScopeController extends Controller
        }
        return response()->json(['error'=>"No records found!"],401);
    }
+
+
+   /**
+    * Get all items for created and updated.
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @return \Illuminate\Http\Response
+    */
+    public function getBuildingClassItems(Request $request,$id)
+    {
+        $token = $this->getToken($request);
+        $user = JWTAuth::toUser($token);
+        $input = $request->all();
+ 
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+        //$id = 2;
+        $lists = DB::table('m_project_scope_new as psn')
+                    ->leftjoin('m_items as i','i.id','=','psn.items_id')
+                    ->where('building_class_id','=',$id)
+                    ->select('i.name as item_name','items_id','price')
+                    ->get();
+
+        //print_r($lists);                    
+        if(count($lists)>0){
+        //print("EXISTING ");
+            $result['info']['lists'] = $lists;
+            return response()->json(['result'=>$result]);
+        }else{
+        //print("NEW ");
+            $arr = $this->getNewBuildingItems($id);
+            $result['info']['lists'] = $arr;
+            return response()->json(['result'=>$result]);
+        }
+        $result['error'] = 'Your listing has been coud not added!';
+        return response()->json(['result'=>$result],401);
+    }
+
+    public function getNewBuildingItems($id)
+    {
+        $lists = DB::table('m_items as i')
+                    ->select('i.name as item_name','i.id as items_id')
+                    ->get();
+        foreach ($lists as $key => $value) {
+            $lists[$key]->price = 0;
+        }            
+        return $lists;
+    }
+
+    public function updateBuildingClassItems(Request $request ,$id){
+        $token = $this->getToken($request);
+        $user = JWTAuth::toUser($token);
+        $input = $request->all();
+ 
+        if($id == null){
+            return response()->json(['error'=>'invalid entry!'],401);    
+        }
+        $data = $input['info'];
+        $delId = DB::table('m_project_scope_new')->where('building_class_id','=',$id)->delete();
+        
+        foreach ($data as $key => $value) {
+           $value['building_class_id'] = $id;
+           $insertId =  DB::table('m_project_scope_new')->insert($value);
+        }      
+
+        DB::table('m_building_class')->where('id','=',$id)->update(['is_configured'=>1]);
+
+        $res_msg = "Your record has been inserted sucessfully";
+        if(count($insertId)>0){            $result['info']['msg'] = $res_msg;
+            return response()->json(['result'=>$result]);
+        }
+        $result['error'] = 'Your record has been could not added!';
+        return response()->json(['result'=>$result],401);
+        
+
+    }
+
+    public function getBuildingClassLists(Request $request){
+        $token = $this->getToken($request);
+        $user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        $lists = DB::table('m_building_class')
+                ->where('is_configured','=',0)
+                ->get();
+
+        if(count($lists)>0){       
+            $result['info']['lists'] = $lists;
+            return response()->json(['result'=>$result]);
+        }
+        $result['error'] = 'No records found!';
+        return response()->json(['result'=>$result],401);                
+    }
+
 
    /**
     * Store a newly created resource in storage.

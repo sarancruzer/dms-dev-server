@@ -36,15 +36,17 @@ class UserController extends Controller
         $input = $request->all();
 
         $searchValue = $input['q'];
-        $lists = DB::table('users')
+        $lists = DB::table('users as u')
+                ->leftjoin('m_roles as r','r.id','=','u.role_id')
+                ->select('u.*','r.name as user_type')
                 ->where(function($query) use ($searchValue)
                 {
                     if(!empty($searchValue)):
-                        $query->where('name','LIKE',DB::raw("'%$searchValue%'"));
-                        $query->orWhere('email','LIKE',DB::raw("'%$searchValue%'"));
+                        $query->where('u.name','LIKE',DB::raw("'%$searchValue%'"));
+                        $query->orWhere('u.email','LIKE',DB::raw("'%$searchValue%'"));
                     endif;
                 })
-                ->where('status','=',1)
+                ->where('u.status','=',1)
                 ->orderBy($input['column'],$input['orderby'])
                 ->paginate(5);        
                 //->toSql();        
@@ -139,13 +141,13 @@ class UserController extends Controller
             return response()->json(['error'=>'invalid entry!'],401);    
         }
         
-        $lists = DB::table('listings')->where('id','=',$id)->first();
+        $lists = DB::table('users')->where('id','=',$id)->first();
         
         if(count($lists)>0){
             $result['info']['lists'] = $lists;
             return response()->json(['result'=>$result]);
         }
-        return response()->json(['error'=>'Your listing has been coud not added!'],401);
+        return response()->json(['error'=>'Your users has been coud not added!'],401);
                             
         
     }
@@ -185,7 +187,7 @@ class UserController extends Controller
        
         $listId = DB::table('users')->where('id','=',$id)->update($data);
         if($listId){
-            $result['result'] = 'Your record has been updated successfully! ';
+            $result['info']['msg'] = 'Your record has been updated successfully! ';
             return response()->json(['result'=>$result]);
         }
         return response()->json(['error'=>'Your record update failed!!'],401);

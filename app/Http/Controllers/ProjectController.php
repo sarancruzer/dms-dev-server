@@ -36,16 +36,22 @@ class ProjectController extends Controller
         $input = $request->all();
 
         $searchValue = $input['q'];
+        $territory = $input['territory'];
         $lists = DB::table('project as p')
                 ->leftjoin('m_state as s','s.id','=','p.state')
                 ->leftjoin('clients as c','c.id','=','p.client_name')
+                ->leftjoin('m_territory as m','m.id','=','p.territory')
                 ->select('p.*','s.name as state','c.client_business as client_name')
-                ->where(function($query) use ($searchValue)
+                ->where(function($query) use ($searchValue,$territory)
                 {
                     if(!empty($searchValue)):
                         $query->where('c.client_business','LIKE',DB::raw("'%$searchValue%'"));
-                        $query->orWhere('c.abn','LIKE',DB::raw("'%$searchValue%'"));
+                        $query->orWhere('c.abn','LIKE',DB::raw("'%$searchValue%'"));                        
                     endif;
+                    if($territory != 0):
+                        $query->orWhere('p.territory','=',$territory);                        
+                    endif;
+                    
                 })
                 ->where('p.status','=',1)
                 ->orderBy($input['column'],$input['orderby'])
@@ -745,7 +751,11 @@ class ProjectController extends Controller
                 ->where('project_id','=',$id)->get();
 
      $projectLists = DB::table('project')->where('id','=',$id)->first();
+
+     $projectQuote = DB::table('project_scope_quote')->where('project_id','=',$id)->first();  
+
      $result['info']['project_name'] = $projectLists->project_name; 
+     $result['info']['project_quote'] = $projectQuote->quote; 
      if(count($lists)>0){
          //print("EXISTING ");
            $arr = $this->getExistingSupplyItems($id);
@@ -859,10 +869,10 @@ class ProjectController extends Controller
         
     }
 
-    $supply_items_territory = DB::table('supply_items_territory as sit')
+    $supply_items_terms = DB::table('supply_items_terms as sit')
     ->where('project_id','=',$id)->first();                     
 
-    $ar['territory'] = $supply_items_territory->territory_id;
+    $ar['supply_terms'] = $supply_items_terms->supply_terms_id;
 
     //print_r($ar);  
     return $ar;
@@ -926,13 +936,13 @@ class ProjectController extends Controller
         $listId = DB::table('supply_items')->insertGetId($arr[$key]);
     }
 
-    DB::table('supply_items_territory')->where('project_id','=',$id)->delete();
+    DB::table('supply_items_terms')->where('project_id','=',$id)->delete();
 
     $st_data = array(
         'project_id'=>$id,
-        'territory_id'=>$input_data['territory']
+        'supply_terms_id'=>$input_data['supply_terms']
     );
-    $st_id = DB::table('supply_items_territory')->insertGetId($st_data);
+    $st_id = DB::table('supply_items_terms')->insertGetId($st_data);
     
     $result = array();
     $res_msg = "Your record has been inserted sucessfully";
