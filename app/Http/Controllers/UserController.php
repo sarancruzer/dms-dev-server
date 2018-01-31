@@ -185,7 +185,7 @@ class UserController extends Controller
        
         $listId = DB::table('users')->where('id','=',$id)->update($data);
         if($listId){
-            $result['result'] = 'Your record has been updated successfully! ';
+            $result['info']['msg'] = 'Your record has been updated successfully! ';
             return response()->json(['result'=>$result]);
         }
         return response()->json(['error'=>'Your record update failed!!'],401);
