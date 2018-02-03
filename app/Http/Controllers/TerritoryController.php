@@ -45,7 +45,7 @@ class TerritoryController extends Controller
                 })
                 //->where('name','like','%'.$input['q'].'%')
                 ->orderBy($input['column'],$input['orderby'])
-                ->paginate(5);        
+                ->paginate(10);        
                 //->toSql();        
        
         $result = array();

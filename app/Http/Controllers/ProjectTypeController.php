@@ -36,7 +36,7 @@ class ProjectTypeController extends Controller
        $lists = DB::table('m_project_type')
                ->where('name','like','%'.$input['q'].'%')
                ->orderBy($input['column'],$input['orderby'])
-               ->paginate(5);        
+               ->paginate(10);        
       
        $result = array();
        if(count($lists) > 0){

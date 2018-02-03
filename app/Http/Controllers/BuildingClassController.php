@@ -39,7 +39,7 @@ class BuildingClassController extends Controller
                ->where('bc.name','like','%'.$input['q'].'%')
                ->where('bc.is_configured','=',1)
                ->orderBy('bc.'.$input['column'],$input['orderby'])
-               ->paginate(5);        
+               ->paginate(10);        
       
        $result = array();
        if(count($lists) > 0){

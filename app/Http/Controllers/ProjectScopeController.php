@@ -39,7 +39,7 @@ class ProjectScopeController extends Controller
                ->select('i.name as item_name','bc.name as building_class','mps.*')
                ->where('i.name','like','%'.$input['q'].'%')
                ->orderBy('i.'.$input['column'],$input['orderby'])
-               ->paginate(5);        
+               ->paginate(10);        
       
        $result = array();
        if(count($lists) > 0){
