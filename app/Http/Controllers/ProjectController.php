@@ -448,12 +448,13 @@ class ProjectController extends Controller
                  
                  if($val->id != 18){
                     
-                 $priceLists = DB::table('m_project_scope')
+                 $priceLists = DB::table('m_project_scope_new')
                             ->where('building_class_id','=',$value['building_class_id'])
                             ->where('items_id','=',$val->id)
                             ->first();
-                //   print_r($priceLists);
-                //   echo $priceLists->price;
+                
+                  //print_r($priceLists);
+                  //echo $priceLists->price;
 
                  $newArr[$kk][$val->db_name."_price"] = $priceLists->price;   
                  
@@ -525,7 +526,7 @@ class ProjectController extends Controller
                 
                 if($val->items_id != 18){
 
-                $priceLists = DB::table('m_project_scope')
+                $priceLists = DB::table('m_project_scope_new')
                             ->where('building_class_id','=',$value->building_class_id)
                             ->where('items_id','=',$val->items_id)
                             ->first();
@@ -710,7 +711,7 @@ class ProjectController extends Controller
         $user = JWTAuth::toUser($token);
         $input = $request->all();
       
-        $lists = DB::table('m_project_scope as ps')
+        $lists = DB::table('m_project_scope_new as ps')
                     ->leftjoin('m_building_class as bc','bc.id','=','ps.building_class_id')
                     ->leftjoin('m_items as i','i.id','=','ps.items_id')
                     ->select('ps.*','bc.name as building_class',DB::raw('LOWER(i.name) as item_name'))
