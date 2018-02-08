@@ -59,7 +59,7 @@ class ProjectController extends Controller
                 //->toSql();        
        
         $result = array();
-        if(count($lists) > 0){
+        if(count($lists)){
              $result["info"] = $lists;
              return response()->json(["result" => $result]);   
         }
