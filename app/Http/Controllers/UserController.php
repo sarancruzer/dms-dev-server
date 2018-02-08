@@ -77,11 +77,16 @@ class UserController extends Controller
 
         $input_data = $input['info'];
         $data['first_name'] = $input_data['first_name'];
+        $data['company_name'] = $input_data['company_name'];
+        $data['title'] = $input_data['title'];
         $data['last_name'] = $input_data['last_name'];
         $data['password'] = Hash::make('123456');
         $data['email'] = $input_data['email'];
         $data['mobile'] = $input_data['mobile'];
         $data['role_id'] = $input_data['role'];
+
+        $data['skype'] = $input_data['skype'];
+        $data['wechat'] = $input_data['wechat'];
         
         $checkData = DB::table('users')
                     ->where('email','=',$input_data['email'])
@@ -172,9 +177,14 @@ class UserController extends Controller
         $input_data = $input['info'];
         $data['first_name'] = $input_data['first_name'];
         $data['last_name'] = $input_data['last_name'];
+        $data['company_name'] = $input_data['company_name'];
+        $data['title'] = $input_data['title'];
         $data['email'] = $input_data['email'];
         $data['mobile'] = $input_data['mobile'];
         $data['role_id'] = $input_data['role_id'];
+
+        $data['skype'] = $input_data['skype'];
+        $data['wechat'] = $input_data['wechat'];
 
         $checkData = DB::table('users')
                     ->where('email','=',$input_data['email'])
