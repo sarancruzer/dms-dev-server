@@ -151,6 +151,11 @@ class ProjectDocsController extends Controller
            return response()->json(['error'=>"Invalid Entry"],401);
        }
        $input_data = $input["info"];
+
+       if(isset($input_data['ref']))
+       {
+            unset($input_data['ref']);
+       }
        
        $listId = DB::table('project_docs')
                     ->where('id','=',$id)

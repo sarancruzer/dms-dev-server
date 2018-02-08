@@ -37,7 +37,7 @@ class BuildingClassController extends Controller
                ->leftjoin('m_project_type as pt','pt.id','=','bc.project_type_id')
                ->select('bc.*','pt.name as project_type')
                ->where('bc.name','like','%'.$input['q'].'%')
-               ->where('bc.is_configured','=',1)
+               //->where('bc.is_configured','=',1)
                ->orderBy('bc.'.$input['column'],$input['orderby'])
                ->paginate(10);        
       

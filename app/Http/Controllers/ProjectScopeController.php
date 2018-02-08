@@ -33,7 +33,7 @@ class ProjectScopeController extends Controller
        $user = JWTAuth::toUser($token);
        $input = $request->all();
 
-       $lists = DB::table('m_project_scope as mps')
+       $lists = DB::table('m_project_scope_new as mps')
                ->leftjoin('m_items as i','i.id','=','mps.items_id')         
                ->leftjoin('m_building_class as bc','bc.id','=','mps.building_class_id')         
                ->select('i.name as item_name','bc.name as building_class','mps.*')
@@ -82,7 +82,7 @@ class ProjectScopeController extends Controller
     //                return response()->json(['error'=>"Already exists!"],401);
     //        }
        
-       $listId = DB::table('m_project_scope')->insertGetId($data);
+       $listId = DB::table('m_project_scope_new')->insertGetId($data);
        $res_msg = "Your record has been inserted sucessfully";
        
        $result = array();
@@ -245,7 +245,7 @@ class ProjectScopeController extends Controller
        $data['price'] = $input_data['price'];
 
        if(isset($input_data['id']) && $input_data['id'] != '' ){
-               $checkData = DB::table('m_project_scope')
+               $checkData = DB::table('m_project_scope_new')
                ->where('id','!=',$input_data['id'])
                ->where('name','=',$input_data['name'])
                ->select('name')
@@ -258,7 +258,7 @@ class ProjectScopeController extends Controller
            return response()->json(['error'=>"Invalid Entry!"],401);
        }
        
-       $listId = DB::table('m_project_scope')
+       $listId = DB::table('m_project_scope_new')
            ->where('id','=',$input_data['id'])
            ->update($data);
 
@@ -284,7 +284,7 @@ class ProjectScopeController extends Controller
        $user = JWTAuth::toUser($token);
        $input = $request->all();
                 
-       $o_id = DB::table('m_project_scope')
+       $o_id = DB::table('m_project_scope_new')
                ->where('id','=',$id)
                ->delete();  
        
