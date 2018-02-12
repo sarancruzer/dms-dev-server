@@ -68,15 +68,8 @@ class ContactsController extends Controller
 
        $input_data = $input['info'];
        
-       $checkData = DB::table('m_contacts')
-                        ->where('client_name','=',$input_data['client_name'])
-                        ->select('client_name')
-                        ->first($data);
-        // if($checkData){
-        //         return response()->json(['error'=>"Already exists!"],401);
-        // }
-       
-       $listId = DB::table('m_contacts')->insertGetId($data);
+          
+       $listId = DB::table('m_contacts')->insertGetId($input_data);
        $res_msg = "Your record has been inserted sucessfully";
        
        $result = array();
