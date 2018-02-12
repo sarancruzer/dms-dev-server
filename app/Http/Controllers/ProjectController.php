@@ -838,47 +838,114 @@ class ProjectController extends Controller
     
    }
 
-
    public function getExistingSupplyItems($id)
-   {   
-     
-    $lists = DB::table('supply_items as si')
-                     ->leftjoin('m_items_supply as is','is.id','=','si.items_id')
-                     ->select('si.*','is.name','is.db_name')
-                     ->where('project_id','=',$id)->get();
+   {
 
-    //print_r($lists);
+        
+        $app= [];
+        $ps_lists = DB::table('project_scope_new as psn')
+                        ->where('project_id','=',$id)->get();
     
-    $ar = [];
-    foreach ($lists as $key => $value) {
+        $items_supply = DB::table('m_items_supply')->get();
+    
+    
+        $arr=[];
+        $db_arr=[];
+    
+        foreach ($items_supply as $key => $value) {
+           
+                    //$ps_child_lists = DB::table('project_scope_child_new')->where('project_id','=',$id)->get();
+                $shrt_code = $value->short_code;
+                $pieces = explode(",", $shrt_code);
+                $strval="";
+                foreach ($pieces as $key => $srt) {
+                   $strval .= "'".$srt."',";
+                }
+                
+                $outval=substr($strval,0,strlen($strval)-1);
+                //print($outval);
+                $items_lists = DB::table('m_items')->whereRaw('short_code IN ('.$outval.')')
+                ->get(); 
+                // print_r($items_lists);
+                foreach ($items_lists as $k => $val) {
+    
+                    
+            $p_lists = DB::table('project_scope_child_new')
+                                    ->where('project_id','=',$id)
+                                    ->where('items_id','=',$val->id)
+                                    ->where('qty','>',0)
+                                    ->get();
+            
+            $s_lists = DB::table('supply_items')
+                        ->where('project_id','=',$id)
+                        ->where('items_id','=',$value->id)
+                        ->first();
 
-        if($value->quoted_date != ''){
-            $quoted_date = date("d-m-Y", strtotime($value->quoted_date));
-        }else{
-            $quoted_date = '';
-        }
-        if($value->estimated_date != ''){
-            $estimated_date = date("d-m-Y", strtotime($value->estimated_date));
-        }else{
-            $estimated_date = '';
-        }
-
-     //  $quoted_date = date("d-m-Y", strtotime($value->quoted_date));
-       // $estimated_date = date("d-m-Y", strtotime($value->estimated_date));
-       
-        $ar[$value->db_name] = ["greyout"=>($value->greyout == "disabled" ? 0 : 1),"interest"=>$value->interest_id,"estimated_date"=>$estimated_date,"quoted_date"=>$quoted_date,"status"=>$value->supply_status]; 
+            if(count($p_lists)>0){
+                 if(!in_array($value->db_name,$db_arr)){
+                    array_push($db_arr,$value->db_name);
+                     $app[$value->db_name] = ["greyout"=>"","interest"=>1,"estimated_date"=>$s_lists->estimated_date,"quoted_date"=>$s_lists->quoted_date,"status"=>1];
+                 }
+            
+            }
+            else{
+                if(!in_array($value->db_name,$db_arr)){
+                    array_push($db_arr,$value->db_name);
+                    $app[$value->db_name] = ["greyout"=>"disabled","interest"=>1,"estimated_date"=>$s_lists->estimated_date,"quoted_date"=>$s_lists->quoted_date,"status"=>1];
+                }
+            }
+    
+    
+            
+         }
+    }
+    
+        $app['territory'] = 1;
+        return $app;
         
     }
 
-    $supply_items_terms = DB::table('supply_items_terms as sit')
-    ->where('project_id','=',$id)->first();                     
 
-    $ar['supply_terms'] = $supply_items_terms->supply_terms_id;
+//    public function getExistingSupplyItems($id)
+//    {   
+     
+//     $lists = DB::table('supply_items as si')
+//                      ->leftjoin('m_items_supply as is','is.id','=','si.items_id')
+//                      ->select('si.*','is.name','is.db_name')
+//                      ->where('project_id','=',$id)->get();
 
-    //print_r($ar);  
-    return $ar;
+//     //print_r($lists);
+    
+//     $ar = [];
+//     foreach ($lists as $key => $value) {
+
+//         if($value->quoted_date != ''){
+//             $quoted_date = date("d-m-Y", strtotime($value->quoted_date));
+//         }else{
+//             $quoted_date = '';
+//         }
+//         if($value->estimated_date != ''){
+//             $estimated_date = date("d-m-Y", strtotime($value->estimated_date));
+//         }else{
+//             $estimated_date = '';
+//         }
+
+//      //  $quoted_date = date("d-m-Y", strtotime($value->quoted_date));
+//        // $estimated_date = date("d-m-Y", strtotime($value->estimated_date));
        
-   }
+//         $ar[$value->db_name] = ["greyout"=>($value->greyout == "disabled" ? 0 : 1),"interest"=>$value->interest_id,"estimated_date"=>$estimated_date,"quoted_date"=>$quoted_date,"status"=>$value->supply_status]; 
+        
+//     }
+
+//     $supply_items_terms = DB::table('supply_items_terms as sit')
+//     ->where('project_id','=',$id)->first();                     
+
+//     $ar['supply_terms'] = $supply_items_terms->supply_terms_id;
+
+//     //print_r($ar);  
+//     return $ar;
+       
+//    }
 
 
    public function updateSupplyItems(Request $request,$id)
