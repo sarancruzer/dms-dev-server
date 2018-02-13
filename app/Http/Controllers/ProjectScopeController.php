@@ -176,11 +176,17 @@ class ProjectScopeController extends Controller
         $input = $request->all();
 
         $lists = DB::table('m_building_class')
-                ->where('is_configured','=',0)
+                ->where('is_configured','=',1)
                 ->get();
+
+        $createLists = DB::table('m_building_class')
+                        ->where('is_configured','=',0)
+                        ->get();                
 
         if(count($lists)>0){       
             $result['info']['lists'] = $lists;
+            $result['info']['createLists'] = $createLists;
+            
             return response()->json(['result'=>$result]);
         }
         $result['error'] = 'No records found!';
