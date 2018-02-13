@@ -34,6 +34,8 @@ class ContactsController extends Controller
        $user = JWTAuth::toUser($token);
        $input = $request->all();
 
+       print_r($input);
+
        $lists = DB::table('m_contacts as c')
                 ->leftjoin('m_job_title as jt','jt.id','=','c.job_title')
                 ->select('c.*','jt.name as job_title_name')

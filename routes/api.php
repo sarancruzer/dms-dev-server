@@ -157,7 +157,7 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 
 	//get all Masters
 	Route::post('getMasters', 'MasterController@getMasterDetails');		
-	//Route::post('getContacts', 'MasterController@getContactDetails');		
+	Route::post('getContactDetails', 'MasterController@getContactDetails');		
 
 	Route::post('getClientReport','ReportController@getClientReport');
 	Route::post('getProjectReport','ReportController@getProjectReport');
