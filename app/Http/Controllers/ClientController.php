@@ -173,7 +173,7 @@ class ClientController extends Controller
                     ->select('client_business')
                     ->first();
         if($checkData){
-            return response()->json(['error'=>"Client Business Already exists!"],401);
+            return response()->json(['error'=>"Client Business Name Already exists!"],401);
         }
        
         $listId = DB::table('clients')->where('id','=',$id)->update($data);
