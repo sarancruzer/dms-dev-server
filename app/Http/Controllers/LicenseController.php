@@ -47,7 +47,6 @@ class LicenseController extends Controller
                         $query->orWhere('l.company_name','LIKE',DB::raw("'%$searchValue%'"));
                     endif;
                 })
-                ->where('l.status','=',1)
                 ->orderBy($input['column'],$input['orderby'])
                 ->paginate(5);        
                 //->toSql();        
@@ -204,7 +203,7 @@ class LicenseController extends Controller
         $data['status'] = 0;
         $listId = DB::table('license')
                 ->where('id','=',$id)
-                ->update($data);  
+                ->delete();  
         
         if($listId){
             $result['info']['msg'] = 'Your record has been removed successfully';
