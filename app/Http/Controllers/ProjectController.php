@@ -755,8 +755,18 @@ class ProjectController extends Controller
 
      $projectQuote = DB::table('project_scope_quote')->where('project_id','=',$id)->first();  
 
+     $supplyTerms = DB::table('supply_items_terms')->where('project_id','=',$id)->first();  
+      
+     if(!empty($supplyTerms)){
+        $result['info']['supply_terms'] = $supplyTerms->supply_terms_id; 
+     }else{
+        $result['info']['supply_terms'] = 1; 
+     }
      $result['info']['project_name'] = $projectLists->project_name; 
      $result['info']['project_quote'] = $projectQuote->quote; 
+     
+
+
      if(count($lists)>0){
          //print("EXISTING ");
            $arr = $this->getExistingSupplyItems($id);
@@ -831,9 +841,7 @@ class ProjectController extends Controller
 
         
      }
-}
-
-    $app['territory'] = 1;
+}   
     return $app;
     
    }
@@ -900,7 +908,6 @@ class ProjectController extends Controller
          }
     }
     
-        $app['territory'] = 1;
         return $app;
         
     }
