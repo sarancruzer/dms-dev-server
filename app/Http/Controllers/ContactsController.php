@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
 use JWTAuth;
 use App\User;
 use DB;
 use Hash;
 
-class BuildingClassController extends Controller
+class ContactsController extends Controller
 {
-     /**
+   /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -33,13 +34,12 @@ class BuildingClassController extends Controller
        $user = JWTAuth::toUser($token);
        $input = $request->all();
 
-       $lists = DB::table('m_building_class as bc')
-               ->leftjoin('m_project_type as pt','pt.id','=','bc.project_type_id')
-               ->select('bc.*','pt.name as project_type')
-               ->where('bc.name','like','%'.$input['q'].'%')
-               ->where('bc.is_configured','=',1)
-               ->orderBy('bc.'.$input['column'],$input['orderby'])
-               ->paginate(10);        
+       $lists = DB::table('m_contacts as c')
+                ->leftjoin('m_job_title as jt','jt.id','=','c.job_title')
+                ->select('c.*','jt.name as job_title_name')
+                ->where('c.first_name','like','%'.$input['q'].'%')
+                ->orderBy('c.first_name','asc')
+                ->paginate(5);        
       
        $result = array();
        if(count($lists) > 0){
@@ -67,19 +67,9 @@ class BuildingClassController extends Controller
        }
 
        $input_data = $input['info'];
-       $data['name'] = $input_data['name'];
-       $data['project_type_id'] = $input_data['project_type_id'];
-       $data['short_code'] = $input_data['short_code'];
        
-       $checkData = DB::table('m_building_class')
-           ->where('name','=',$input_data['name'])
-           ->select('name')
-           ->first($data);
-           if($checkData){
-                   return response()->json(['error'=>"Already exists!"],401);
-           }
-       
-       $listId = DB::table('m_building_class')->insertGetId($data);
+          
+       $listId = DB::table('m_contacts')->insertGetId($input_data);
        $res_msg = "Your record has been inserted sucessfully";
        
        $result = array();
@@ -142,27 +132,14 @@ class BuildingClassController extends Controller
            return response()->json(['error'=>"Invalid Entry"],401);
        }
        $input_data = $input["info"];
-       $data['name'] = $input_data['name'];
-       $data['project_type_id'] = $input_data['project_type_id'];
-       $data['short_code'] = $input_data['short_code'];
-
-       if(isset($input_data['id']) && $input_data['id'] != '' ){
-               $checkData = DB::table('m_building_class')
-               ->where('id','!=',$input_data['id'])
-               ->where('name','=',$input_data['name'])
-               ->select('name')
-               ->first($data);
        
-               if($checkData){
-                       return response()->json(['error'=>"Already exists!"],401);
-               }
-       }else{
-           return response()->json(['error'=>"Invalid Entry!"],401);
+       if(isset($input_data['job_title_name'])){
+            unset($input_data['job_title_name']);
        }
        
-       $listId = DB::table('m_building_class')
-           ->where('id','=',$input_data['id'])
-           ->update($data);
+       $listId = DB::table('m_contacts')
+                ->where('id','=',$input_data['id'])
+                ->update($input_data);
 
        $res_msg = "Your record has been updated sucessfully";
        $result = array();
@@ -186,7 +163,7 @@ class BuildingClassController extends Controller
        $user = JWTAuth::toUser($token);
        $input = $request->all();
                 
-       $o_id = DB::table('m_building_class')
+       $o_id = DB::table('m_contacts')
                ->where('id','=',$id)
                ->delete();  
        

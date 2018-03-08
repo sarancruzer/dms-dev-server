@@ -89,6 +89,13 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 	// Route::post('updateTerritory/{id}', 'TerritoryController@update');		
 	// Route::post('deleteTerritory/{id}', 'TerritoryController@destroy');	
 
+	//Master modules
+	Route::post('getContacts', 'ContactsController@index');
+	Route::post('addContacts', 'ContactsController@create');
+	Route::post('updateContacts/{id}', 'ContactsController@update');		
+	Route::post('deleteContacts/{id}', 'ContactsController@destroy');
+
+
 	//Manage Users
 	Route::post('getUser', 'UserController@index');
 	Route::post('addUser', 'UserController@create');
@@ -150,9 +157,11 @@ Route::group(["middleware"=>"jwt.auth"], function(){
 
 	//get all Masters
 	Route::post('getMasters', 'MasterController@getMasterDetails');		
-	Route::post('getContacts', 'MasterController@getContactDetails');		
+	Route::post('getContactDetails', 'MasterController@getContactDetails');		
 
 	Route::post('getClientReport','ReportController@getClientReport');
+	Route::post('getProjectReport','ReportController@getProjectReport');
+	
 	
 	
 	

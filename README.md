@@ -5,7 +5,7 @@
 
 - starter-laravel-angular has been upgraded to Laravel 5.3. You can pull the changes and run* `rm composer.lock && composer install --prefer-dist --no-scripts` *to merge the upgrade.*
 
-# Laravel and AngularJS Starter Application
+# Laravel 5.3 and Angular 4 Starter Application
 
 This is a repo for a starter application for a Single Page Application featuring the modern Laravel PHP framework and Google’s acclaimed front-end framework AngularJS. Just download and install and you have a good foundation for building any application.
 
@@ -25,7 +25,7 @@ This is a repo for a starter application for a Single Page Application featuring
   
 ## Installation
 ```
-git clone https://github.com/sarancruzer/listeo-dev.git
+git clone https://github.com/sarancruzer/dms-dev.git
 ```
 ```
 composer install 

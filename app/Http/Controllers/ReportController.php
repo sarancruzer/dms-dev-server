@@ -101,6 +101,7 @@ class ReportController extends Controller
         //
     }
 
+
     public function getClientReport(Request $request)
     {
         //
@@ -207,11 +208,255 @@ class ReportController extends Controller
          $pdf->setPaper('A4', 'landscape');
          return $pdf->download("file.pdf");
     
-        
-
-        
-
 
         
     }
+
+    
+
+    public function getProjectReport(Request $request)
+    {
+        //
+        $token = $this->getToken($request);
+        $user = JWTAuth::toUser($token);
+        $input = $request->all();
+
+        $id = $input['id'];
+        
+        //echo public_path();
+        //return PDF::loadHTML($str)->save(public_path().'/my_stored_file1.pdf')->download('download.pdf');
+
+        // $pdf = PDF::loadView('pdf.invoice', $data);
+        // return $pdf->download('invoice.pdf');
+
+        // $pdf = App::make('dompdf.wrapper');
+        // $pdf->loadHTML('<h1>Test</h1>');
+        // return $pdf->download("file.pdf");
+
+        
+
+        $lists = DB::table('project as p')
+                    ->leftjoin('clients as c','c.id','=','p.client_name')
+                    ->leftjoin('m_state as ms','ms.id','=','p.state')
+                    ->leftjoin('m_project_status as mps','mps.id','=','p.project_status')                   
+                    
+                    ->select('p.*','c.client_company_name','ms.name as project_state','mps.name as project_status')
+                    ->where('p.id','=',$id)
+                    ->first();
+
+        $str= '    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+                    <table width="100%" cellspacing="3" cellpadding="3" border="1" >
+                    <thead>
+                    <style>
+                    thead {backgroun:darkgrey;}
+                    table, th, td {
+                        border: 1px solid black;
+                    }
+                    </style>
+                        <tr  >
+                        <th colspan="2" align="center">Project Details</th>
+                        </tr>
+                        <tr>
+                        <td>Project identifier</td>
+                        <td> 00'.$lists->id .'</td>
+                        </tr>
+                        <tr>
+                        <td>Client Name</td>
+                        <td>'. $lists->client_company_name .'</td>
+                        </tr>
+                        <tr>
+                        <td>Client Type</td>
+                        <td>'. $lists->client_company_name .'</td>
+                        </tr>
+                        <tr>
+                        <td>Project Name</td>
+                        <td>'. $lists->project_name .'</td>
+                        </tr>
+                        <tr>
+                        <td>Project Address</td>
+                        <td>'. $lists->address1.''.$lists->address2 .'</td>
+                        </tr>
+                        <tr>
+                        <td>Project State</td>
+                        <td>'. $lists->project_state .'</td>
+                        </tr>
+                        <tr>
+                        <td>Project Description</td>
+                        <td>'. $lists->description .'</td>
+                        </tr>
+                        <tr>
+                        <td>Project Status</td>
+                        <td>'. $lists->project_status .'</td>
+                        </tr>                                                    
+                        <tr>
+                        <td>Record Entry Date</td>
+                        <td>'. $lists->created_at .'</td>
+                        </tr>                                                    
+                        <tr>
+                        <td>Start Date</td>
+                        <td>'. $lists->created_at .'</td>
+                        </tr>                                                    
+                        <tr>
+                        <td>Duration (Months) </td>
+                        <td>'. $lists->construction_duration .'</td>
+                        </tr>  
+                        <tr>
+                        <td>No of Levels </td>
+                        <td>'. $lists->levels_begin .' - '. $lists->levels_end . '</td>
+                        </tr>                                                    
+                    </thead>
+                    <tbody>';
+
+         $str .= '</tbody></table></div></div></div>';
+
+
+         $projectTeamlists = DB::table('project_team as pt')
+                    ->leftjoin('m_contacts as mc','mc.id','=','pt.developer')
+                    ->leftjoin('m_contacts as pm','pm.id','=','pt.project_manager')
+                    ->leftjoin('m_contacts as sm','sm.id','=','pt.site_manager')
+                    ->select('pt.*','mc.first_name as developer','pm.first_name as project_manager','sm.first_name as site_manager','pt.architech','pt.engineer','pt.building_surveyor','pt.quantity_surveyor','pt.superintendent')
+                    ->where('pt.project_id','=',$id)
+                    ->first();
+
+
+                    $str .= '<table width="100%" cellspacing="3" cellpadding="3" border="1" >
+                    <thead>
+                    <style>
+                    thead {backgroun:darkgrey;}
+                    table, th, td {
+                        border: 1px solid black;
+                    }
+                    </style>
+                        <tr  >
+                        <th colspan="2" align="center">Project Team</th>
+                        </tr>
+                        <tr>
+                        <td> Developer</td>
+                        <td> '.$projectTeamlists->developer .'</td>
+                        </tr> 
+                        <tr>
+                        <td>Project Manager</td>
+                        <td> '.$projectTeamlists->project_manager .'</td>
+                        </tr> 
+                        <tr>
+                        <td>Site Manager</td>
+                        <td> '.$projectTeamlists->site_manager .'</td>
+                        </tr> 
+                        <tr>
+                        <td>Architect</td>
+                        <td> '.$projectTeamlists->architech .'</td>
+                        </tr> 
+                        <tr>
+                        <td>Engineer</td>
+                        <td> '.$projectTeamlists->engineer .'</td>
+                        </tr> 
+                        <tr>
+                        <td>Building Surveyor</td>
+                        <td> '.$projectTeamlists->building_surveyor .'</td>
+                        </tr> 
+                        <tr>
+                        <td>Quantity Surveyor</td>
+                        <td> '.$projectTeamlists->quantity_surveyor .'</td>
+                        </tr>                                                                        
+                        <tr>
+                        <td>Superindent</td>
+                        <td> '.$projectTeamlists->superintendent .'</td>
+                        </tr>                                                                        
+                    </thead>
+                    <tbody>';
+         $str .= '</tbody></table></div></div></div>';
+
+        
+        //  $items_list = DB::table('m_items')->get();
+
+        //  $project_scope_list = DB::table('project_scope_new as ps')
+        //                         ->leftjoin('m_project_type as pt','pt.id','=','ps.project_type_id')
+        //                         ->leftjoin('m_building_class as bc','bc.id','=','ps.building_class_id')
+        //                         ->where('ps.project_id','=',$id)
+        //                         ->select('ps.*','pt.name as project_type_name','bc.name as building_class_name')
+        //                         ->get();
+         
+        //  $str .= '<br><br><br>';
+
+        // $str .= '    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        //  <table class="table">
+        //       <thead class="thead-inverse">
+        //         <tr>
+        //           <th>Items</th>';
+        //           foreach ($project_scope_list as $key => $value) {
+        //             $str .= '<th >'. $value->building_class_name . '</th>';
+        //           }                  
+        // $str .= '</tr></thead><tbody>';
+
+
+
+
+
+        // $ps_lists = DB::table('project_scope_new')->where('project_id','=',$id)->get();
+
+        // $arr=[];
+        // $arrr = [];
+
+        // foreach ($ps_lists as $key => $value) {
+
+        //     $ps_child_items = DB::table('project_scope_child_new')->where('ps_id','=',$value->id)->get();
+
+        //     foreach ($ps_child_items as $k => $val) {
+
+        //         $item = DB::table('m_items')->where('id','=',$val->items_id)->first();
+
+        //         $project_types = DB::table('m_project_type')->where('id','=',$value->project_type_id)->first();
+        //         $building_classs = DB::table('m_building_class')->where('id','=',$value->building_class_id)->first();
+
+        //         $arr[$key]['project_id'] = $value->project_id;
+        //         $arr[$key]['project_type_id'] = $value->project_type_id;
+        //         $arr[$key]['building_class_id'] = $value->building_class_id;
+                
+        //         $arr[$key]['project_type'] = $project_types->name;
+        //         $arr[$key]['building_class'] = $building_classs->name;
+        //         $arr[$key]['building_units'] = $value->building_units;
+
+        //         $arr[$key][$item->db_name] = $val->qty;
+                
+        //         if($val->items_id != 18){
+
+        //         $priceLists = DB::table('m_project_scope_new')
+        //                     ->where('building_class_id','=',$value->building_class_id)
+        //                     ->where('items_id','=',$val->items_id)
+        //                     ->first();
+
+        //         $arr[$key][$item->db_name.'_price'] = $priceLists->price;
+
+
+        //         $arrr[$key]['project_type'] = $project_types->name;
+        //         $arrr[$key]['building_class'] = $building_classs->name;
+        //         $arrr[$key]['building_units'] = $value->building_units;
+
+        //         $arrr[$key][$item->db_name] = $val->qty;
+
+        //         }
+
+
+
+               
+                
+        //     }  
+
+        // }
+
+
+        // $result['info']['lists'] = $arr;
+        // $result['info']['items_lists'] = $arrr;
+       
+
+
+         $pdf = App::make('dompdf.wrapper');
+         $pdf->loadHTML($str);
+         $pdf->setPaper('A4', 'portrait');
+         return $pdf->download("ProjectReport.pdf");
+    
+
+        
+    }
+
 }

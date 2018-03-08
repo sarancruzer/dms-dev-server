@@ -36,7 +36,7 @@ class StateController extends Controller
         $lists = DB::table('m_state')
                 ->where('name','like','%'.$input['q'].'%')
                 ->orderBy($input['column'],$input['orderby'])
-                ->paginate(5);        
+                ->paginate(10);        
        
         $result = array();
         if(count($lists) > 0){
