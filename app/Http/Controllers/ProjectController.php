@@ -555,7 +555,7 @@ class ProjectController extends Controller
 
         $project_quote_data = DB::table('project_scope_quote')->where('project_id','=',$id)->first(); 
         
-         $projectLists = DB::table('project')->where('id','=',$id)->first();
+        $projectLists = DB::table('project')->where('id','=',$id)->first();
          
 
         if(count($ps_lists)>0){
