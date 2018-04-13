@@ -245,13 +245,17 @@ class ReportController extends Controller
                     ->first();
 
         $str= '    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-                    <table width="100%" cellspacing="3" cellpadding="3" border="1" >
+                    <table width="100%" cellspacing="4" cellpadding="3" border="1" >
                     <thead>
                     <style>
                     thead {backgroun:darkgrey;}
                     table, th, td {
                         border: 1px solid black;
                     }
+                    th { 
+                        height:25px;
+                    }
+                  
                     </style>
                         <tr  >
                         <th colspan="2" align="center">Project Details</th>
@@ -307,7 +311,101 @@ class ReportController extends Controller
                     </thead>
                     <tbody>';
 
-         $str .= '</tbody></table></div></div></div>';
+         $str .= '</tbody></table>';
+
+         $str .= '<br><br><br><br><br><br><br><br><br><br><br><br>';
+         $str .= '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
+
+
+         $project_scope_list = DB::table('project_scope_new as ps')
+                                ->leftjoin('m_project_type as pt','pt.id','=','ps.project_type_id')
+                                ->leftjoin('m_building_class as bc','bc.id','=','ps.building_class_id')
+                                ->where('ps.project_id','=',$id)
+                                ->select('ps.*','pt.name as project_type_name','bc.name as building_class_name')
+                                ->get();
+            
+        $project_scope_child_list = DB::table('project_scope_new as ps')
+                                ->leftjoin('m_project_type as pt','pt.id','=','ps.project_type_id')
+                                ->leftjoin('m_building_class as bc','bc.id','=','ps.building_class_id')
+                                ->leftjoin('project_scope_child_new as pscn','pscn.ps_id','=','ps.id')
+                                ->leftjoin('m_items as mi','mi.id','=','pscn.items_id')
+                                ->where('ps.project_id','=',$id)
+                                ->select('ps.*','pscn.qty','pt.name as project_type_name','mi.name','bc.name as building_class_name')
+                                ->groupby('ps.id')
+                                ->get(); 
+
+        foreach ($project_scope_child_list as $key => $val) {
+                                    $val->build_class = DB::table('project_scope_child_new as m')
+                                                            ->leftjoin('m_items as item','m.items_id','=','item.id')
+                                                            ->select('m.*','item.name as item_name')
+                                                            ->where('m.ps_id','=',$val->id)
+                                                            ->get();
+                                }      
+                                   //print_r($project_scope_child_list); exit;
+         
+    
+       
+
+        $str .= '<table width="100%" cellspacing="2" cellpadding="2" border="1" >
+              <thead >
+                <tr><th>Project Scope By Type</th>';
+
+                  foreach ($project_scope_list as $key => $value) {
+                    $str .= '<th >'. $value->project_type_name . '</th>';
+                  } 
+
+        $str .= '<th > </th>';   
+        $str .= '<th > </th>';                                     
+        $str .= '</tr>';
+
+        $str .='<tr>
+        <th>Building class name</th>';
+        foreach ($project_scope_list as $key => $value) {
+          $str .= '<th >'. $value->building_class_name . '</th>';
+        }               
+        $str .= '<th > </th>';   
+        $str .= '<th > </th>';   
+        $str .= '</tr>';
+
+        $str .='<tr>
+        <th>Building units</th>';
+        foreach ($project_scope_list as $key => $value) {
+          $str .= '<th >'. $value->building_units . '</th>';
+        }               
+        $str .= '<th > Expected Value</th>';   
+        $str .= '<th > Source Corp Bidding</th>';      
+        $str .= '</tr>';
+        
+        $str .='</thead><tbody>';
+        
+            foreach($project_scope_child_list[0]->build_class as $data => $childVal){
+                $i = 0;
+                $str .='<tr>';
+                if($i==0)
+                   
+                    $str .= '<td >'. $childVal->item_name . '</td>';
+                    $str .= '<td > $ </td>';
+                    $str .= '<td > Yes / No / Maybe </td>';
+
+                while(count($project_scope_child_list)>$i )
+                {
+                //    print_r($j);
+                    foreach($project_scope_child_list[$i]->build_class as $childdata => $childValdata){
+                        if($childValdata->item_name==$childVal->item_name)
+                            $str .= '<td >'. $childValdata->qty. '</td>';                            
+                    }
+                    $i++;
+                }
+
+                $str .='</tr>';
+            }
+                  
+        // print_r($str);
+        $str .='</tbody></table>';
+
+
+
+
 
 
          $projectTeamlists = DB::table('project_team as pt')
@@ -362,91 +460,15 @@ class ReportController extends Controller
                         <td>Superindent</td>
                         <td> '.$projectTeamlists->superintendent .'</td>
                         </tr>                                                                        
-                    </thead>
-                    <tbody>';
-         $str .= '</tbody></table></div></div></div>';
-
-        
+                    </thead>';
+         $str .= '</table>';
+           
+     
         //  $items_list = DB::table('m_items')->get();
 
-        //  $project_scope_list = DB::table('project_scope_new as ps')
-        //                         ->leftjoin('m_project_type as pt','pt.id','=','ps.project_type_id')
-        //                         ->leftjoin('m_building_class as bc','bc.id','=','ps.building_class_id')
-        //                         ->where('ps.project_id','=',$id)
-        //                         ->select('ps.*','pt.name as project_type_name','bc.name as building_class_name')
-        //                         ->get();
          
-        //  $str .= '<br><br><br>';
-
-        // $str .= '    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        //  <table class="table">
-        //       <thead class="thead-inverse">
-        //         <tr>
-        //           <th>Items</th>';
-        //           foreach ($project_scope_list as $key => $value) {
-        //             $str .= '<th >'. $value->building_class_name . '</th>';
-        //           }                  
-        // $str .= '</tr></thead><tbody>';
 
 
-
-
-
-        // $ps_lists = DB::table('project_scope_new')->where('project_id','=',$id)->get();
-
-        // $arr=[];
-        // $arrr = [];
-
-        // foreach ($ps_lists as $key => $value) {
-
-        //     $ps_child_items = DB::table('project_scope_child_new')->where('ps_id','=',$value->id)->get();
-
-        //     foreach ($ps_child_items as $k => $val) {
-
-        //         $item = DB::table('m_items')->where('id','=',$val->items_id)->first();
-
-        //         $project_types = DB::table('m_project_type')->where('id','=',$value->project_type_id)->first();
-        //         $building_classs = DB::table('m_building_class')->where('id','=',$value->building_class_id)->first();
-
-        //         $arr[$key]['project_id'] = $value->project_id;
-        //         $arr[$key]['project_type_id'] = $value->project_type_id;
-        //         $arr[$key]['building_class_id'] = $value->building_class_id;
-                
-        //         $arr[$key]['project_type'] = $project_types->name;
-        //         $arr[$key]['building_class'] = $building_classs->name;
-        //         $arr[$key]['building_units'] = $value->building_units;
-
-        //         $arr[$key][$item->db_name] = $val->qty;
-                
-        //         if($val->items_id != 18){
-
-        //         $priceLists = DB::table('m_project_scope_new')
-        //                     ->where('building_class_id','=',$value->building_class_id)
-        //                     ->where('items_id','=',$val->items_id)
-        //                     ->first();
-
-        //         $arr[$key][$item->db_name.'_price'] = $priceLists->price;
-
-
-        //         $arrr[$key]['project_type'] = $project_types->name;
-        //         $arrr[$key]['building_class'] = $building_classs->name;
-        //         $arrr[$key]['building_units'] = $value->building_units;
-
-        //         $arrr[$key][$item->db_name] = $val->qty;
-
-        //         }
-
-
-
-               
-                
-        //     }  
-
-        // }
-
-
-        // $result['info']['lists'] = $arr;
-        // $result['info']['items_lists'] = $arrr;
        
 
 
@@ -454,9 +476,8 @@ class ReportController extends Controller
          $pdf->loadHTML($str);
          $pdf->setPaper('A4', 'portrait');
          return $pdf->download("ProjectReport.pdf");
-    
-
-        
+           
     }
+    
 
 }
